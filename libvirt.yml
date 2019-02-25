@@ -1,0 +1,34 @@
+---
+  - name: Configure libvirt
+    hosts: localhost
+    user: root
+    vars:
+      iptable_rules:
+        - name: virbr0 
+          route: 192.168.122.0/24
+        - name: virbr0_ironic
+          route: 172.30.0.0/22
+        - name: virbr0
+          route: 192.168.122.0/24
+        - name: virbr0_ironic
+          route: 172.30.0.0/22
+
+#    roles:
+#      - role: debops.libvirt
+
+    tasks:
+      - name: Add OUT interface iptable rules for vm_ironic_x <> vm_mgmt_x
+        iptables:
+          chain: FORWARD
+          out_interface: "{{item.name}}"
+          destination: "{{item.route}}"
+          jump: ACCEPT
+        with_items: "{{iptable_rules}}"
+
+      - name: Add IN interface iptable rules for vm_ironic_x <> vm_mgmt_x
+        iptables:
+          chain: FORWARD
+          in_interface: "{{item.name}}"
+          source: "{{item.route}}"
+          jump: ACCEPT
+        with_items: "{{iptable_rules}}"

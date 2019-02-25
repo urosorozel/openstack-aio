@@ -1,0 +1,148 @@
+- name: Configure Common
+  hosts: infra
+  remote_user: root
+  gather_facts: false
+  environment:
+    #ANSIBLE_DEBUG: 1
+    #BOOTSTRAP_OPTS: "bootstrap_host_data_disk_device=vdb _bootstrap_host_data_disk_device=vdb container_tech=lxc"
+    BOOTSTRAP_OPTS: "container_tech=lxc"
+    #SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
+    SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
+    HTTP_PROXY: "http://10.184.227.134:3128"
+    NO_PROXY: "127.0.0.1,localhost,172.29.236.100,192.168.122.100,.local.net"
+  pre_tasks:
+  - name: Install python2 for Ansible
+    raw: bash -c "test -e /usr/bin/python || ( apt -qqy update && apt install -qqy python-minimal python2.7)"
+    register: output
+    changed_when:
+    - output.stdout != ""
+    - output.stdout != "\r\n"
+  - name: Gathering Facts
+    setup:
+
+  tasks:
+  - name: Create a new file for APT config
+    file: path=/etc/apt/apt.conf.d/10disable-auto-apt  state=touch
+
+  - name: Disable Automatic APT
+    lineinfile:
+      dest: /etc/apt/apt.conf.d/10disable-auto-apt
+      line: 'APT::Periodic::Enable "0";'
+      state: present
+
+  - name: Install dnsmasq
+    apt:
+      name: dnsmasq
+      state: present 
+
+  - name: Stop and disable
+    systemd:
+      name: systemd-resolved
+      state: stopped
+      enabled: false
+
+  - name: Add dnsmasq config 
+    blockinfile:
+      path: /etc/dnsmasq.conf
+      block: |
+        domain-needed
+        bogus-priv
+        #local=/local.net/
+        interface=ens2
+        listen-address={{ ansible_default_ipv4.address }}
+        addn-hosts=/etc/banner_add_hosts
+        strict-order
+        expand-hosts
+        domain=local.net
+        log-queries
+
+  - name: Add dnsmasq hosts
+    blockinfile:
+      path: /etc/banner_add_hosts
+      create: yes
+      block: |
+        {{ ansible_default_ipv4.address }} ironic-public ironic-public.local.net
+        172.29.236.100 ironic-private ironic-private.local.net
+
+  - name: Remove resolv.conf soft link
+    file: 
+      path: /etc/resolv.conf
+      state: absent
+
+
+  - name: Add nameservers to resolv.conf
+    blockinfile:
+      path: /etc/resolv.conf
+      create: yes
+      block: |
+        nameserver {{ ansible_default_ipv4.address }}
+        nameserver 10.184.227.134
+
+  - name: Restart Dnsmasq
+    systemd:
+      name: dnsmasq
+      state: restarted
+
+
+  - name: Get Openstack ansible from git
+    git:
+      repo: https://github.com/urosorozel/openstack-ansible.git
+      dest: /opt/openstack-ansible
+      version: osa_rocky_14feb
+
+
+  - name: Boostrap ansible
+    shell: |
+      ./scripts/bootstrap-ansible.sh
+    args:
+      chdir: /opt/openstack-ansible
+      creates: /etc/ansible/roles
+
+  - name: Boostrap aio
+    shell: |
+      ./scripts/bootstrap-aio.sh
+    args:
+      chdir: /opt/openstack-ansible
+      creates: /etc/openstack_deploy
+
+ # - meta: end_play
+
+  - name: Setup openstack
+    command: |
+      openstack-ansible playbooks/setup-everything.yml
+    args:
+      chdir: /opt/openstack-ansible
+      creates: /etc/openstack-release 
+
+  - name: Check if drivare is changed
+    shell: |
+      grep -q libvirt.LibvirtDriver /etc/nova/nova.conf
+    register: nova_check
+    failed_when: false
+    changed_when: "nova_check.rc == 1"
+ 
+  - name: Update driver on AIO
+    command: |
+      openstack-ansible playbooks/os-nova-install.yml  --limit aio1 -e nova_virt_type=qemu
+    args:
+      chdir: /opt/openstack-ansible
+    when: nova_check.changed
+
+  - name: Check for CA certificate
+    shell: |
+      grep -q  $(openssl x509 -in /etc/ssl/private/haproxy.pem -text | openssl x509 | sed -n '2p') /usr/lib/python2.7/dist-packages/certifi/cacert.pem 
+    register: cert_check
+    failed_when: false
+    changed_when: "cert_check.rc == 1"
+
+  - name: Add selfsigned ceritficate to chain
+    shell: |
+      find /openstack /usr /var/lib/lxc /etc  -name cacert.pem | grep 'packages/certifi/cacert.pem' | xargs -Ixx -t bash -c "openssl x509 -in /etc/ssl/private/haproxy.pem -text | openssl x509 >> xx"
+    when: cert_check.changed
+
+  - meta: end_play
+  - name: Add ens3 to br-ironic
+    shell: |
+      brctl addif br-ironic ens3
+
+  - include: post_deploy.yml

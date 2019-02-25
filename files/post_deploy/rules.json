@@ -1,0 +1,37 @@
+[{
+    "description": "Set IPMI driver_info if no credentials",
+    "actions": [
+        {"action": "set-attribute", "path": "driver", "value": "ipmi"},
+    {"action": "set-attribute", "path": "deploy_interface", "value": "direct" },
+        {"action": "set-attribute", "path": "driver_info/ipmi_username",
+         "value": "ADMIN"},
+        {"action": "set-attribute", "path": "driver_info/ipmi_password",
+         "value": "ADMIN"},
+    {"action": "set-attribute", "path": "driver_info/ipmi_address",
+         "value": "{data[inventory][bmc_address]}"},
+    {"action": "set-attribute", "path": "name",
+         "value": "{data[inventory][boot][pxe_interface]}"}
+    ],
+    "conditions": [
+        {"op": "is-empty", "field": "node://driver_info.ipmi_password"},
+        {"op": "is-empty", "field": "node://driver_info.ipmi_username"}
+    ]
+},{
+    "description": "Set deploy info if not already set on node",
+    "actions": [
+        {"action": "set-attribute", "path": "driver_info/deploy_kernel",
+         "value": "{{ kernel_image }}"},
+        {"action": "set-attribute", "path": "driver_info/rescue_kernel",
+         "value": "{{ kernel_image }}"},
+        {"action": "set-attribute", "path": "driver_info/deploy_ramdisk",
+         "value": "{{ ramdisk_image }}"},
+    {"action": "set-attribute", "path": "driver_info/rescue_ramdisk",
+         "value": "{{ ramdisk_image }}"}
+    ],
+    "conditions": [
+        {"op": "is-empty", "field": "node://driver_info.deploy_ramdisk"},
+        {"op": "is-empty", "field": "node://driver_info.deploy_kernel"},
+    {"op": "is-empty", "field": "node://driver_info.rescue_kernel"},
+    {"op": "is-empty", "field": "node://driver_info.rescue_ramdisk"}
+    ]
+}]

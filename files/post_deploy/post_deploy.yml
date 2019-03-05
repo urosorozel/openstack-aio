@@ -122,7 +122,10 @@
         network_name: ironic-network
         name: ironic-subnet
         cidr: 172.30.0.0/22
+        allocation_pool_start: 172.30.0.101
+        allocation_pool_end: 172.30.3.254
         dns_nameservers:
+           - 172.30.0.100
            - 192.168.122.100 
         validate_certs: False
 

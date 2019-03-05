@@ -43,7 +43,7 @@ blueprints:
     disk_precreate: True
     block_device_list:
     - device: vdb
-      block_size: 100
+      block_size: 40
       type: file
 
 ironic_metal:
@@ -61,7 +61,7 @@ ironic_metal:
     host_net_mac: 0c:c4:7a:bb:ff:f1
   block_device_list:
   - device: sda
-    block_size: 100
+    block_size: 40
     type: file
   uefi: false
 - name: ironic02-aio
@@ -78,14 +78,14 @@ ironic_metal:
     host_net_mac: 0c:c4:7a:bb:ff:f2
   block_device_list:
   - device: sda
-    block_size: 100
+    block_size: 40
     type: file
   uefi: true
 - name: ironic03-aio
   vbmc: 192.168.122.203
   vbmc_bridge: virbr0
-  cpu: 1
-  memory: 2048
+  cpu: 2
+  memory: 4096
   virtualization: kvm
   fqdn: ironic03-aio
   block_pool: vgdata1
@@ -95,14 +95,14 @@ ironic_metal:
     host_net_mac: 0c:c4:7a:bb:ff:f3
   block_device_list:
   - device: sda
-    block_size: 10
+    block_size: 40
     type: file
   uefi: false
 - name: ironic04-aio
   vbmc: 192.168.122.204
   vbmc_bridge: virbr0
-  cpu: 1
-  memory: 2048
+  cpu: 2
+  memory: 4096
   virtualization: kvm
   fqdn: ironic04-aio
   block_pool: vgdata1
@@ -112,14 +112,14 @@ ironic_metal:
     host_net_mac: 0c:c4:7a:bb:ff:f4
   block_device_list:
   - device: sda
-    block_size: 10
+    block_size: 40
     type: file
   uefi: false
 - name: ironic05-aio
   vbmc: 192.168.122.205
   vbmc_bridge: virbr0
-  cpu: 1
-  memory: 2048
+  cpu: 2
+  memory: 4096
   virtualization: kvm
   fqdn: ironic05-aio
   block_pool: vgdata1
@@ -129,6 +129,6 @@ ironic_metal:
     host_net_mac: 0c:c4:7a:bb:ff:f5
   block_device_list:
   - device: sda
-    block_size: 10
+    block_size: 40
     type: file
   uefi: false

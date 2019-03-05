@@ -53,7 +53,7 @@ openstack flavor set baremetal-flavor --property "resources:CUSTOM_BAREMETAL_SMA
 source enroll/bin/activate
 export OS_CACERT=''
 source openrc
-
+exit 0
 python enroll_ironic.py --deploy-kernel $DEPLOY_VMLINUZ_UUID  --deploy-ramdisk $DEPLOY_INITRD_UUID ironic_nodes.yml ironic_nodes.yml
 # Wait for ironic nodes available in resource list
 #sleep 80

@@ -51,7 +51,7 @@ ironic_metal:
   vbmc: 192.168.122.200
   vbmc_bridge: virbr0
   cpu: 2
-  memory: 4096
+  memory: 6144
   virtualization: kvm
   fqdn: ironic01-aio
   block_pool: vgdata1
@@ -68,7 +68,7 @@ ironic_metal:
   vbmc: 192.168.122.201
   vbmc_bridge: virbr0
   cpu: 2
-  memory: 4096
+  memory: 6144
   virtualization: kvm
   fqdn: ironic02-aio
   block_pool: vgdata1
@@ -85,7 +85,7 @@ ironic_metal:
   vbmc: 192.168.122.203
   vbmc_bridge: virbr0
   cpu: 2
-  memory: 4096
+  memory: 6144
   virtualization: kvm
   fqdn: ironic03-aio
   block_pool: vgdata1
@@ -102,7 +102,7 @@ ironic_metal:
   vbmc: 192.168.122.204
   vbmc_bridge: virbr0
   cpu: 2
-  memory: 4096
+  memory: 6144
   virtualization: kvm
   fqdn: ironic04-aio
   block_pool: vgdata1
@@ -119,7 +119,7 @@ ironic_metal:
   vbmc: 192.168.122.205
   vbmc_bridge: virbr0
   cpu: 2
-  memory: 4096
+  memory: 6144
   virtualization: kvm
   fqdn: ironic05-aio
   block_pool: vgdata1

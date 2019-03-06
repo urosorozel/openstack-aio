@@ -343,6 +343,22 @@
         cloud: default
         state: present
         name: osa_key
+      register: keypair
+
+    - debug: var=keypair
+    - name: Write private key
+      copy:
+        content: "{{ keypair.key.private_key }}"
+        dest: /root/.ssh/osa_key
+        mode: 0400
+      when: keypair.changed
+
+    - name: Write public key
+      copy:
+        content: "{{ keypair.key.public_key }}"
+        dest: /root/.ssh/osa_key.pub
+        mode: 0644
+      when: keypair.changed
 
     - name: Gather facts about a previously created image named ubuntu_ramdisk
       os_image_facts:

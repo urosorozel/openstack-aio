@@ -101,7 +101,7 @@
         hosts:  "{{ ironic_hosts.stdout_lines }}"
         validate_certs: False
         metadata:
-          baremetal: 'True'
+          baremetal: 'true'
 
     - name: Add host aggregate for virtual servers
       os_nova_host_aggregate:
@@ -112,7 +112,7 @@
           - aio1
         validate_certs: False
         metadata:
-          baremetal: 'False'
+          baremetal: 'talse'
 
     - name: Add public network
       os_network:
@@ -363,6 +363,14 @@
       template:
         src: post/rules.json.j2
         dest: rules.json
+
+    - name: Purge and add introspection rules
+      shell: |
+        . /root/openrc
+        openstack baremetal introspection  rule purge
+        openstack baremetal introspection  rule import rules.json
+      args:
+        chdir: /root
 
 - name: Post deploy
   hosts: utility_container[0]

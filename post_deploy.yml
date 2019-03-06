@@ -19,6 +19,7 @@
         - post_deploy.sh
         - ironic_uefi.yml
         - grub.cfg
+        - rules.json.j2
 
     - name: Run post_deploy.yml on infra1
       shell: |

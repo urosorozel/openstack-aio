@@ -1,5 +1,39 @@
 - name: Post deploy
   hosts: utility_container
+  vars:
+    cloud_images:
+      - bionic:
+         name: "ubuntu-bionic"
+         url: "http://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
+      - xenial:
+         name: "ubuntu-xenial"
+         url: "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-uefi1.img"
+      - cirros:
+         name: "cirros-0.3.6"
+         url: "http://download.cirros-cloud.net/0.3.6/cirros-0.3.6-x86_64-disk.img"
+
+    ipa_images:
+#      coreos:
+#        kernel:
+#          url: "http://tarballs.openstack.org/ironic-python-agent/coreos/files/coreos_production_pxe-stable-rocky.vmlinuz"
+#          name: "coreos_kernel"
+#        ramdisk:
+#          url: "http://tarballs.openstack.org/ironic-python-agent/coreos/files/coreos_production_pxe_image-oem-stable-rocky.cpio.gz"
+#          name: "coreos_ramdisk"
+      tinyipa:
+        kernel:
+          url: "http://tarballs.openstack.org/ironic-python-agent/tinyipa/files/tinyipa-stable-rocky.vmlinuz"
+          name: "tinyipa_kernel"
+        ramdisk:
+          url: "http://tarballs.openstack.org/ironic-python-agent/tinyipa/files/tinyipa-stable-rocky.gz"
+          name: "tinyipa_ramdisk"
+      ubuntu:
+        kernel:
+          name: "ubuntu_kernel"
+          url: "http://10.184.227.134/ubuntu_kernel"
+        ramdisk:
+          name: "ubuntu_ramdisk"
+          url: "http://10.184.227.134/ubuntu_ramdisk"
   tasks:
 
     - name: Update openrc for ironic API
@@ -24,7 +58,7 @@
 
     - name: Instal requirements
       apt:
-        name: 
+        name:
           - python-setuptools
           - curl
 
@@ -52,11 +86,6 @@
         virtualenv: /root/enroll
         extra_args: --isolated
 
-
-- name: Post deploy
-  hosts: utility_container[0]
-  tags: ironic_aggregate
-  tasks:
     - name: Get ironic hosts for baremetal server aggregate
       shell: |
         . /root/openrc;openstack host list| grep internal | grep ironic-compute | awk '{ print $2}'
@@ -71,6 +100,8 @@
         name: baremetal-hosts
         hosts:  "{{ ironic_hosts.stdout_lines }}"
         validate_certs: False
+        metadata:
+          baremetal: 'True'
 
     - name: Add host aggregate for virtual servers
       os_nova_host_aggregate:
@@ -80,6 +111,8 @@
         hosts:
           - aio1
         validate_certs: False
+        metadata:
+          baremetal: 'False'
 
     - name: Add public network
       os_network:
@@ -126,7 +159,7 @@
         allocation_pool_end: 172.30.3.254
         dns_nameservers:
            - 172.30.0.100
-           - 192.168.122.100 
+           - 192.168.122.100
         validate_certs: False
 
 
@@ -202,6 +235,134 @@
         protocol: icmp
         remote_ip_prefix: 0.0.0.0/0
 
+    - name: Update quotas
+      os_quota:
+        cloud: default
+        name: "admin"
+        validate_certs: False
+        cores: -1
+        fixed_ips: -1
+        floating_ips: -1
+        floatingip: -1
+        gigabytes: -1
+        injected_files: -1
+        instances: -1
+        key_pairs: -1
+        ram: -1
+        security_group_rule: -1
+        security_group: -1
+        volumes: -1
+
+
+    - name: Download cloud images
+      get_url:
+        url: "{{ item.value.url }}"
+        dest: "/root/{{ item.value.name }}"
+      with_dict: "{{ cloud_images }}"
+      tags:
+        - download-cloud
+
+    - name: Download ipa images
+      get_url:
+        url: "{{ ipa_images | json_query(item[0] + '.' + item[1] + '.url') }}"
+        dest: "/root/{{ ipa_images | json_query(item[0] + '.' + item[1] + '.name') }}"
+      with_nested:
+        - "{{ ipa_images }}"
+        - ['kernel', 'ramdisk']
+      tags:
+        - download-ipa
+
+    - name: Upload cloud images
+      os_image:
+        cloud: default
+        validate_certs: False
+        name: "{{ item.value.name }}"
+        container_format: bare
+        disk_format: qcow2
+        state: present
+        filename: "/root/{{ item.value.name }}"
+        properties:
+          cpu_arch: x86_64
+      with_dict: "{{ cloud_images }}"
+
+    - name: Remove cloud images
+      file:
+        path: "/root/{{ item.value.name }}"
+        state: absent
+      with_dict: "{{ cloud_images }}"
+
+    - name: Upload ipa images
+      os_image:
+        cloud: default
+        validate_certs: False
+        name: "{{ ipa_images | json_query(item[0] + '.' + item[1] + '.name') }}"
+        container_format: aki
+        disk_format: aki
+        state: present
+        filename: "/root/{{ ipa_images | json_query(item[0] + '.' + item[1] + '.name') }}"
+      with_nested:
+        - "{{ ipa_images }}"
+        - ['kernel', 'ramdisk']
+
+    - name: Remove ipa images
+      file:
+        path: "/root/{{ ipa_images | json_query(item[0] + '.' + item[1] + '.name') }}"
+        state: absent
+      with_nested:
+        - "{{ ipa_images }}"
+        - ['kernel', 'ramdisk']
+
+    - name: Create flavor with metadata for virtual
+      os_nova_flavor:
+        cloud: default
+        validate_certs: False
+        state: present
+        name: virtual-flavor
+        ram: 256
+        vcpus: 1
+        disk: 1
+        extra_specs:
+          "baremetal": "false"
+
+    - name: Create flavor with metadata for baremetal
+      os_nova_flavor:
+        cloud: default
+        validate_certs: False
+        state: present
+        name: baremetal-flavor
+        ram: 1024
+        vcpus: 1
+        disk: 10
+        extra_specs:
+          "baremetal": "true"
+          "resources:CUSTOM_BAREMETAL_SMALL": "1"
+
+    - name: Create SSH keypair
+      os_keypair:
+        validate_certs: False
+        cloud: default
+        state: present
+        name: osa_key
+
+    - name: Gather facts about a previously created image named ubuntu_ramdisk
+      os_image_facts:
+        cloud: default
+        validate_certs: False
+        image: ubuntu_ramdisk
+      register: ipa_ramdisk
+
+
+    - name: Gather facts about a previously created image named ubuntu_kernel
+      os_image_facts:
+        cloud: default
+        validate_certs: False
+        image: ubuntu_kernel
+      register: ipa_kernel
+
+    - name: Output introspection rules
+      template:
+        src: post/rules.json.j2
+        dest: rules.json
 
 - name: Post deploy
   hosts: utility_container[0]

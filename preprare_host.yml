@@ -48,13 +48,15 @@
         bogus-priv
         #local=/local.net/
         interface=ens2
-        listen-address={{ ansible_default_ipv4.address }}
+        listen-address={{ ansible_default_ipv4.address }},172.30.0.100
         interface=br-ironic
         addn-hosts=/etc/banner_add_hosts
         strict-order
         expand-hosts
         domain=local.net
-        log-queries
+        no-resolv
+        server=1.1.1.1
+        #log-queries
 
   - name: Add dnsmasq hosts
     blockinfile:

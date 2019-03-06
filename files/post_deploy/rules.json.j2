@@ -20,18 +20,20 @@
     "description": "Set deploy info if not already set on node",
     "actions": [
         {"action": "set-attribute", "path": "driver_info/deploy_kernel",
-         "value": "{{ kernel_image }}"},
+         "value": "{{ ipa_kernel.ansible_facts.openstack_image.id }}"},
         {"action": "set-attribute", "path": "driver_info/rescue_kernel",
-         "value": "{{ kernel_image }}"},
+         "value": "{{ ipa_kernel.ansible_facts.openstack_image.id }}"},
         {"action": "set-attribute", "path": "driver_info/deploy_ramdisk",
-         "value": "{{ ramdisk_image }}"},
-    {"action": "set-attribute", "path": "driver_info/rescue_ramdisk",
-         "value": "{{ ramdisk_image }}"}
+         "value": "{{ ipa_ramdisk.ansible_facts.openstack_image.id }}"},
+        {"action": "set-attribute", "path": "driver_info/rescue_ramdisk",
+         "value": "{{ ipa_ramdisk.ansible_facts.openstack_image.id }}"},
+        {"action": "set-attribute", "path": "resource_class", "value": "BAREMETAL_SMALL"}
     ],
     "conditions": [
         {"op": "is-empty", "field": "node://driver_info.deploy_ramdisk"},
         {"op": "is-empty", "field": "node://driver_info.deploy_kernel"},
     {"op": "is-empty", "field": "node://driver_info.rescue_kernel"},
-    {"op": "is-empty", "field": "node://driver_info.rescue_ramdisk"}
+    {"op": "is-empty", "field": "node://driver_info.rescue_ramdisk"},
+    {"op": "is-empty", "field": "node://resource_class" }
     ]
 }]

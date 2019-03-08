@@ -10,7 +10,7 @@
     {"action": "set-attribute", "path": "driver_info/ipmi_address",
          "value": "{data[inventory][bmc_address]}"},
     {"action": "set-attribute", "path": "name",
-         "value": "{data[inventory][boot][pxe_interface]}"}
+         "value": "{data[inventory][system_vendor][manufacturer]}_{data[inventory][boot][pxe_interface]}"}
     ],
     "conditions": [
         {"op": "is-empty", "field": "node://driver_info.ipmi_password"},

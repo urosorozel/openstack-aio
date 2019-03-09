@@ -20,11 +20,11 @@ if [[ $? -eq 4 ]];then
 fi
 }
 
-virsh list --name | egrep 'openstack-aio' | xargs -Ixx bash -c "virsh destroy xx;virsh undefine xx --nvram"
+virsh list --name --all| egrep 'openstack-aio' | xargs -Ixx bash -c "virsh destroy xx;virsh undefine xx --nvram"
 virsh vol-list vgdata1 |egrep 'openstack-aio' | egrep 'img|qcow' | awk '{print $1}' | xargs -Ixx  virsh vol-delete xx vgdata1
 ansible-playbook -i environments/aio/hosts  build_vms.yml
 echo "Sleeping 50 sec to allow boot"
 sleep 50
 
-chech_health
-
+#chech_health
+ansible-playbook -vv setup_aio.yml

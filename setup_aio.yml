@@ -77,8 +77,8 @@
       path: /etc/resolv.conf
       create: yes
       block: |
+        nameserver 1.1.1.1
         nameserver {{ ansible_default_ipv4.address }}
-        nameserver 10.184.227.134
 
 
   - name: Get Openstack ansible from git
@@ -102,11 +102,16 @@
       chdir: /opt/openstack-ansible
       creates: /etc/openstack_deploy
 
+  - name: Remove temporary DNS name server
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: "^nameserver 1.1.1.1$"
+      state: absent
+
   - name: Restart Dnsmasq after br-ironic is available
     systemd:
       name: dnsmasq
       state: restarted
- # - meta: end_play
 
   - name: Setup openstack
     command: |
@@ -168,6 +173,8 @@
 
 - name: Post deploy VM
   hosts: hypervisor
+  tags:
+    - create_aio_image
   tasks:
     - name: Power off openstack-aio
       command: |
@@ -187,3 +194,17 @@
       delay: 10
       tags:
         - check-power
+
+    - name: Get openstack-aio qcow2 volume path
+      shell: |
+        virsh vol-list vgdata1| grep openstack-aio.qcow|awk '{print $2}'
+      register: volume_path
+
+    - name: Trim openstack-aio qcow2 disk
+      command: |
+        qemu-img convert -O qcow2 "{{ volume_path.stdout }}" "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2"
+
+    - name: Compress qcow2
+      archive:
+        path: "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2"
+        dest: "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2.tgz"

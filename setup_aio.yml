@@ -121,7 +121,13 @@
     register: nova_check
     failed_when: false
     changed_when: "nova_check.rc == 1"
- 
+
+  - name: Add ignore intefaces
+    lineinfile:
+      path: /lib/systemd/system/systemd-networkd-wait-online.service
+      regexp: '^ExecStart=/lib/systemd/systemd-networkd-wait-online$'
+      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --ignore=lxcbr0 --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
+
   - name: Update driver on AIO
     command: |
       openstack-ansible playbooks/os-nova-install.yml  --limit aio1 -e nova_virt_type=qemu
@@ -147,3 +153,37 @@
       brctl addif br-ironic ens3
 
   - include: post_deploy.yml
+
+
+  - name: Clean image
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - /var/cache/lxc/download/ubuntu/bionic/amd64/default/rootfs.tar.xz
+      - /openstack/aio1_repo_container-*/repo/openstackgit
+      - /var/lib/machines.raw
+      - /var/cache/lxc/download/ubuntu/bionic/amd64/default/rootfs.tar.xz
+      - /openstack/swap.img
+
+- name: Post deploy VM
+  hosts: hypervisor
+  tasks:
+    - name: Power off openstack-aio
+      command: |
+        virsh shutdown openstack-aio
+      tags:
+        - check-power
+
+    - name: Check power state
+      shell: |
+        virsh list --all | grep openstack-aio | grep "shut off"
+
+      register: power_state
+      failed_when: false
+      changed_when: "power_state.rc == 0"
+      until: power_state.rc == 0
+      retries: 20
+      delay: 10
+      tags:
+        - check-power

@@ -28,7 +28,3 @@ sleep 50
 
 chech_health
 
-#ansible-playbook  -i environments/aio/hosts set_network.yml
-#reset_vms
-#chech_health
-#ansible-playbook  -i environments/aio/hosts set_openstack.yml

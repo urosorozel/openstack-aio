@@ -8,7 +8,7 @@
     BOOTSTRAP_OPTS: "container_tech=lxc"
     SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
     HTTP_PROXY: "http://10.184.227.134:3128"
-    NO_PROXY: "127.0.0.1,localhost,172.29.236.100,192.168.122.100,.local.net"
+    NO_PROXY: "127.0.0.1,localhost,172.29.236.100,192.168.122.100,.local.net,10.184.227.134"
   pre_tasks:
   - name: Install python2 for Ansible
     raw: bash -c "test -e /usr/bin/python || ( apt -qqy update && apt install -qqy python-minimal python2.7)"
@@ -131,7 +131,7 @@
     lineinfile:
       path: /lib/systemd/system/systemd-networkd-wait-online.service
       regexp: '^ExecStart=/lib/systemd/systemd-networkd-wait-online$'
-      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online  --ignore=lxcbr0 --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
+      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --timeout=15'
 
   - name: Update driver on AIO
     command: |
@@ -167,6 +167,7 @@
     shell: |
       dd if=/dev/zero of=/openstack/swap.img bs=1M count=4096
       chmod 600 /openstack/swap.img
+      mkswap /openstack/swap.img
 
   - name: Clean image
     file:

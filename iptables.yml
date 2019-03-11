@@ -1,20 +1,15 @@
 ---
-  - name: Configure libvirt
+  - name: Allow forward between ironic and host network 
     hosts: localhost
     user: root
     vars:
       iptable_rules:
         - name: virbr0 
-          route: 192.168.122.0/24
-        - name: virbr0_ironic
           route: 172.30.0.0/22
-        - name: virbr0
-          route: 192.168.122.0/24
+          comment: "Allow traffic from host network to ironic"
         - name: virbr0_ironic
-          route: 172.30.0.0/22
-
-#    roles:
-#      - role: debops.libvirt
+          route: 192.168.122.0/24
+          comment: "Allow traffic from ironic to host"
 
     tasks:
       - name: Add OUT interface iptable rules for vm_ironic_x <> vm_mgmt_x
@@ -23,6 +18,7 @@
           out_interface: "{{item.name}}"
           destination: "{{item.route}}"
           jump: ACCEPT
+          commentription: "{{item.comment}}"
         with_items: "{{iptable_rules}}"
 
       - name: Add IN interface iptable rules for vm_ironic_x <> vm_mgmt_x
@@ -31,4 +27,5 @@
           in_interface: "{{item.name}}"
           source: "{{item.route}}"
           jump: ACCEPT
+          commentription: "{{item.comment}}"
         with_items: "{{iptable_rules}}"

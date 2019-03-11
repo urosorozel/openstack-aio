@@ -2,6 +2,14 @@
   hosts: hypervisor
   user: root
   tasks:
+    - name: Install ovmf for uefi support
+      apt:
+        name:
+          - ovmf
+          - libvirt-dev
+          - pkg-config
+          - python-dev
+        state: latest
 
     - name: Check if VM exists
       shell: |
@@ -15,7 +23,7 @@
     - name: Start Virtual machine
       command: > 
         virt-install --name="{{ item.item.name }}"
-                     --boot "hd,network,menu=on{% if item.item.uefi %},loader=/usr/share/OVMF/ovmf-x86_64.bin,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/ovmf-x86_64-vars.bin{% endif %}"
+                     --boot "hd,network,menu=on{% if item.item.uefi %},loader=/usr/share/OVMF/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/OVMF_VARS.fd{% endif %}"
                      --vcpus="{{ item.item.cpu }}"
                      --ram="{{ item.item.memory }}"
                      --description="libvirt VM"

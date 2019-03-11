@@ -131,7 +131,7 @@
     lineinfile:
       path: /lib/systemd/system/systemd-networkd-wait-online.service
       regexp: '^ExecStart=/lib/systemd/systemd-networkd-wait-online$'
-      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
+      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online  --ignore=lxcbr0 --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
 
   - name: Update driver on AIO
     command: |
@@ -164,8 +164,9 @@
       swapoff -a
 
   - name: Clean swap
-    command: |
+    shell: |
       dd if=/dev/zero of=/openstack/swap.img bs=1M count=4096
+      chmod 600 /openstack/swap.img
 
   - name: Clean image
     file:

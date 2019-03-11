@@ -48,7 +48,7 @@ blueprints:
 
 ironic_metal:
 - name: ironic01-aio
-  vbmc: 192.168.122.200
+  vbmc: 192.168.122.201
   vbmc_bridge: virbr0
   cpu: 2
   memory: 6144
@@ -65,7 +65,7 @@ ironic_metal:
     type: file
   uefi: false
 - name: ironic02-aio
-  vbmc: 192.168.122.201
+  vbmc: 192.168.122.202
   vbmc_bridge: virbr0
   cpu: 2
   memory: 6144
@@ -80,7 +80,7 @@ ironic_metal:
   - device: sda
     block_size: 40
     type: file
-  uefi: true
+  uefi: false
 - name: ironic03-aio
   vbmc: 192.168.122.203
   vbmc_bridge: virbr0

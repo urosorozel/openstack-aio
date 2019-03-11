@@ -112,7 +112,7 @@
           - aio1
         validate_certs: False
         metadata:
-          baremetal: 'talse'
+          baremetal: 'false'
 
     - name: Add public network
       os_network:
@@ -387,6 +387,69 @@
         openstack baremetal introspection  rule import rules.json
       args:
         chdir: /root
+
+    - name: Make sure swift container has temp key added
+      command: |
+        swift  --os-username "service:glance" --os-password "{{ glance_service_password }}" --os-auth-url http://172.29.236.100:5000/v3 --os-identity-api-version 3 post -m "temp-url-key:{{ ironic_swift_temp_url_secret_key }}"
+
+- name: Write lxc networkd files
+  hosts: aio1
+  vars_files:
+    - /etc/ansible/roles/lxc_hosts/defaults/main.yml
+  tags:
+    - fix-lxcbr0
+  tasks:
+    - name: Remove  /etc/network/interfaces.d/lxc-net-bridge.cfg
+      file:
+        path:  /etc/network/interfaces.d/lxc-net-bridge.cfg
+        state: absent
+
+    - name: Write network
+      blockinfile:
+        path: "/etc/systemd/network/{{ lxc_net_bridge }}.network"
+        create: yes
+        block: |
+          [Match]
+          Name={{ lxc_net_bridge }}
+
+          [Network]
+          Address={{ (lxc_net_address ~ '/' ~ lxc_net_netmask) | ipaddr('cidr') }}
+          {% if lxc_net_gateway is not none %}
+          Gateway={{ lxc_net_gateway }}
+          {% endif %}
+          ConfigureWithoutCarrier=yes
+
+    - name: Write netdev
+      blockinfile:
+        path: "/etc/systemd/network/{{ lxc_net_bridge }}.netdev"
+        create: yes
+        block: |
+          [NetDev]
+          Name={{ lxc_net_bridge }}
+          Kind=bridge
+
+          [Bridge]
+          ForwardDelaySec=0
+          HelloTimeSec=2
+          MaxAgeSec=12
+          STP=off
+
+- name: Update all containers
+  hosts: all,!aio1
+  tasks:
+    - name: Fix LXC resolved nameserver
+      ini_file:
+        path: /etc/systemd/resolved.conf
+        section: Resolve
+        option: "DNS"
+        value: 10.255.255.1
+
+#    - name: Disable and mask resolved
+#      systemd:
+#        name: systemd-resolved
+#        enabled: yes
+#        masked: no
+#        started: yes
 
 - name: Post deploy
   hosts: utility_container[0]

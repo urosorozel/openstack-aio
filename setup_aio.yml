@@ -46,7 +46,7 @@
       block: |
         domain-needed
         bogus-priv
-        #local=/local.net/
+        local=/local.net/
         interface=ens2
         listen-address={{ ansible_default_ipv4.address }},172.30.0.100
         interface=br-ironic
@@ -131,7 +131,7 @@
     lineinfile:
       path: /lib/systemd/system/systemd-networkd-wait-online.service
       regexp: '^ExecStart=/lib/systemd/systemd-networkd-wait-online$'
-      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --ignore=lxcbr0 --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
+      line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --ignore=br-storage --ignore=br-vxlan --ignore=br-mgmt --ignore=dummy-ironic --ignore=dummy-lbaas --ignore=dummy-dbaas --ignore=dummy-vlan --ignore=dummy-storage --ignore=br-ironic-veth --ignore=br-lbaas-veth --ignore=br-dbaas-veth --ignore=br-vlan-veth --ignore=br-ironic --ignore=br-lbaas --ignore=br-dbaas --ignore=br-vlan --ignore=dummy-vxlan --ignore=dummy-mgmt'
 
   - name: Update driver on AIO
     command: |
@@ -159,6 +159,13 @@
 
   - include: post_deploy.yml
 
+  - name: Trurn off swap
+    command: |
+      swapoff -a
+
+  - name: Clean swap
+    command: |
+      dd if=/dev/zero of=/openstack/swap.img bs=1M count=4096
 
   - name: Clean image
     file:
@@ -169,7 +176,10 @@
       - /openstack/aio1_repo_container-*/repo/openstackgit
       - /var/lib/machines.raw
       - /var/cache/lxc/download/ubuntu/bionic/amd64/default/rootfs.tar.xz
-      - /openstack/swap.img
+
+  - name: Remove repo git clones
+    shell: |
+      rm -rf /openstack/aio1_repo_container-*/repo/openstackgit
 
 - name: Post deploy VM
   hosts: hypervisor
@@ -205,6 +215,8 @@
         qemu-img convert -O qcow2 "{{ volume_path.stdout }}" "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2"
 
     - name: Compress qcow2
-      archive:
-        path: "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2"
-        dest: "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2.tgz"
+      shell: |
+        xz -9ev --threads=0 --keep "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2"
+      args:
+        chdir: "{{ volume_path.stdout | dirname}}"
+        creates: "{{ volume_path.stdout | dirname}}/sparse_openstack_aio.qcow2.xz"

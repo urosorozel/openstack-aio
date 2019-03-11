@@ -12,7 +12,7 @@
           comment: "Allow traffic from ironic to host"
 
     tasks:
-      - name: Add OUT interface iptable rules for vm_ironic_x <> vm_mgmt_x
+      - name: Add OUT interface iptable rules for ironic <> host
         iptables:
           chain: FORWARD
           out_interface: "{{item.name}}"
@@ -21,7 +21,7 @@
           commentription: "{{item.comment}}"
         with_items: "{{iptable_rules}}"
 
-      - name: Add IN interface iptable rules for vm_ironic_x <> vm_mgmt_x
+      - name: Add IN interface iptable rules for ironic <> host
         iptables:
           chain: FORWARD
           in_interface: "{{item.name}}"

@@ -1,0 +1,5 @@
+[hypervisor]
+hypervisor  ansible_connection=local
+
+[infra]
+openstack-aio ansible_ssh_pass=cobbler ansible_host=192.168.122.100

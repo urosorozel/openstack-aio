@@ -1,0 +1,7 @@
+<network>
+<name>{{global_ironic_bridge}}</name>
+  <forward mode='route'/>
+  <bridge name='{{global_ironic_bridge}}' stp='off' delay='0'/>
+  <ip family='ipv4' address='172.30.0.1' netmask='255.255.252.0'>
+  </ip>
+</network>

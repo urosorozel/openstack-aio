@@ -1,0 +1,10 @@
+---
+distro_packages:
+  - libvirt-daemon
+  - libvirt-clients
+  - libvirt-daemon-system
+  - qemu-kvm
+  - virtinst
+  - python-pip
+  - sshpass
+  - ovmf 

@@ -209,7 +209,7 @@
 
     - name: Get openstack-aio qcow2 volume path
       shell: |
-        virsh vol-list vgdata1| grep openstack-aio.qcow|awk '{print $2}'
+        virsh vol-list "{{global_disk_pool}}"| grep openstack-aio.qcow|awk '{print $2}'
       register: volume_path
 
     - name: Trim openstack-aio qcow2 disk

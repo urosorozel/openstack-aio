@@ -1,0 +1,9 @@
+---
+distro_packages:
+  - python-lxml
+  - libvirt-bin
+  - qemu-kvm
+  - virtinst
+  - python-pip
+  - sshpass
+  - ovmf

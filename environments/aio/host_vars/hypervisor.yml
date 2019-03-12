@@ -1,13 +1,24 @@
-build_disk_dir: /data/vgdata1
+build_disk_dir: "{{global_disk_pool_path}}"
 host_nameservers: 10.184.227.134
 ubuntu_release: bionic
+global_disk_pool: data
+global_disk_pool_path: /data
+global_ironic_bridge: ironic-aio
 ubuntu_image_name: "bionic-server-cloudimg-amd64.img"
+
+iptable_rules:
+  - name: "Allow traffic forward between virbr0_ironic and virbr0"
+    in_interface: "{{global_ironic_bridge}}"
+    out_interface: virbr0
+    source: 172.30.0.0/22
+    destination: 192.168.122.0/24
+
 blueprints:
   - build_name: openstack-aio
     build_cpu: 4
     build_memory: 16384
     build_disk: 60G
-    build_disk_pool: vgdata1
+    build_disk_pool: "{{global_disk_pool}}"
     build_image: "http://cloud-images.ubuntu.com/{{ubuntu_release}}/current/{{ubuntu_image_name}}"
     build_virtualization: kvm
     build_os_family: Debian
@@ -33,7 +44,7 @@ blueprints:
       nameservers:
       - '{{ host_nameservers }}'
     - device: ens3
-      host_net_dev: virbr0_ironic 
+      host_net_dev: "{{global_ironic_bridge}}"
       host_net_mac: 0c:c4:7a:aa:ff:f2
       bootproto: static
       mac: 0c:c4:7a:aa:ff:f2
@@ -41,10 +52,6 @@ blueprints:
       netmask: 255.255.255.0
     build_meta: {}
     disk_precreate: True
-    block_device_list:
-    - device: vdb
-      block_size: 40
-      type: file
 
 ironic_metal:
 - name: ironic01-aio
@@ -54,10 +61,10 @@ ironic_metal:
   memory: 6144
   virtualization: kvm
   fqdn: ironic01-aio
-  block_pool: vgdata1
+  block_pool: "{{global_disk_pool}}"
   network_device_list:
   - device: eth0
-    host_net_dev: virbr0_ironic
+    host_net_dev: "{{global_ironic_bridge}}"
     host_net_mac: 0c:c4:7a:bb:ff:f1
   block_device_list:
   - device: sda
@@ -71,10 +78,10 @@ ironic_metal:
   memory: 6144
   virtualization: kvm
   fqdn: ironic02-aio
-  block_pool: vgdata1
+  block_pool: "{{global_disk_pool}}"
   network_device_list:
   - device: eth0
-    host_net_dev: virbr0_ironic
+    host_net_dev: "{{global_ironic_bridge}}"
     host_net_mac: 0c:c4:7a:bb:ff:f2
   block_device_list:
   - device: sda
@@ -88,10 +95,10 @@ ironic_metal:
   memory: 6144
   virtualization: kvm
   fqdn: ironic03-aio
-  block_pool: vgdata1
+  block_pool: "{{global_disk_pool}}"
   network_device_list:
   - device: eth0
-    host_net_dev: virbr0_ironic
+    host_net_dev: "{{global_ironic_bridge}}"
     host_net_mac: 0c:c4:7a:bb:ff:f3
   block_device_list:
   - device: sda
@@ -105,10 +112,10 @@ ironic_metal:
   memory: 6144
   virtualization: kvm
   fqdn: ironic04-aio
-  block_pool: vgdata1
+  block_pool: "{{global_disk_pool}}"
   network_device_list:
   - device: eth0
-    host_net_dev: virbr0_ironic
+    host_net_dev: "{{global_ironic_bridge}}"
     host_net_mac: 0c:c4:7a:bb:ff:f4
   block_device_list:
   - device: sda
@@ -122,10 +129,10 @@ ironic_metal:
   memory: 6144
   virtualization: kvm
   fqdn: ironic05-aio
-  block_pool: vgdata1
+  block_pool: "{{global_disk_pool}}"
   network_device_list:
   - device: eth0
-    host_net_dev: virbr0_ironic
+    host_net_dev: "{{global_ironic_bridge}}"
     host_net_mac: 0c:c4:7a:bb:ff:f5
   block_device_list:
   - device: sda

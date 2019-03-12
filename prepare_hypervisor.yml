@@ -1,0 +1,68 @@
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: Install package
+  apt:
+    name: "{{distro_packages}}"
+
+- name: Create data pool dir
+  file:
+    path: "{{global_disk_pool_path}}"
+    state: directory
+
+- name: Create data pool
+  virt_pool:
+    command: define
+    name: "{{global_disk_pool_name}}"
+    state: active
+    autostart: yes
+    xml: '{{ lookup("template", "files/hypervisor/pool.xml.j2") }}'
+
+- name: Create host network
+  virt_net:
+    command: define
+    name: "{{global_host_bridge}}"
+    xml: '{{ lookup("template", "files/hypervisor/host-net.xml.j2") }}'
+
+- name: Start host network
+  virt_net:
+    command: create
+    name: "{{global_host_bridge}}"
+    state: active
+    autostart: yes
+
+- name: Create ironic network
+  virt_net:
+    command: define
+    name: "{{global_ironic_bridge}}"
+    xml: '{{ lookup("template", "files/hypervisor/ironic-net.xml.j2") }}'
+
+- name: Start ironic network
+  virt_net:
+    command: create
+    name: "{{global_ironic_bridge}}"
+    state: active
+    autostart: yes
+
+- name: Add rules
+  iptables:
+    action: insert
+    rule_num: 3
+    chain: FORWARD
+    out_interface: "{{item.out_interface}}"
+    in_interface: "{{item.in_interface}}"
+    source: "{{item.source}}"
+    destination: "{{item.destination}}"
+    jump: ACCEPT
+    comment: "{{item.name}}"
+  with_items: "{{iptable_rules}}"
+  tags:
+    - iptables

@@ -1,0 +1,10 @@
+<network>
+  <name>{{global_host_bridge}}</name>
+  <forward mode='nat'/>
+  <bridge name='{{global_host_bridge}}' stp='on' delay='0'/>
+  <ip address='192.168.10.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.10.2' end='192.168.10.20'/>
+    </dhcp>
+  </ip>
+</network>

@@ -5,6 +5,10 @@
     vars:
       vms: "{{ blueprints }}"
       #vm_build_proxy_list: "{{ global_environment_variables }}"
-    roles:
-      - role: vmbuild
+    tasks:
+     - name: Gather variables for each operating system
+       include: prepare_hypervisor.yml
 
+     - name: Create AIO vm
+       include_role:
+         name: vmbuild

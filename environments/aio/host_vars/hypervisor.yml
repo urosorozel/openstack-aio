@@ -1,5 +1,5 @@
 # start default variables
-default_host_bridge: virbr0
+default_host_bridge: host-aio
 default_host_nameserver: 10.184.227.134
 default_ironic_bridge: ironic-aio
 default_disk_pool_name: data
@@ -25,7 +25,7 @@ iptable_rules:
     in_interface: "{{global_ironic_bridge}}"
     out_interface: virbr0
     source: 172.30.0.0/22
-    destination: 192.168.122.0/24
+    destination: 192.168.10.0/24
 
 blueprints:
   - build_name: "{{aio_build_name}}"
@@ -51,25 +51,26 @@ blueprints:
       host_net_mac: 0c:c4:7a:aa:ff:f1 
       bootproto: static
       mac: 0c:c4:7a:aa:ff:f1
-      address: 192.168.122.100
+      address: 192.168.10.100
       netmask: 255.255.255.0
-      gateway: 192.168.122.1
-      domain: local
+      gateway: 192.168.10.1
+      domain: local.net
       nameservers:
       - '{{ host_nameservers }}'
     - device: ens3
       host_net_dev: "{{global_ironic_bridge}}"
       host_net_mac: 0c:c4:7a:aa:ff:f2
-      bootproto: static
+      bootproto: manual
       mac: 0c:c4:7a:aa:ff:f2
       address: 10.30.20.20
       netmask: 255.255.255.0
+    block_device_list: []
     build_meta: {}
     disk_precreate: True
 
 ironic_metal:
 - name: ironic01-aio
-  vbmc: 192.168.122.201
+  vbmc: 192.168.10.201
   vbmc_bridge: "{{global_host_bridge}}"
   cpu: 2
   memory: 6144
@@ -86,7 +87,7 @@ ironic_metal:
     type: file
   uefi: false
 - name: ironic02-aio
-  vbmc: 192.168.122.202
+  vbmc: 192.168.10.202
   vbmc_bridge: "{{global_host_bridge}}"
   cpu: 2
   memory: 6144
@@ -103,7 +104,7 @@ ironic_metal:
     type: file
   uefi: false
 - name: ironic03-aio
-  vbmc: 192.168.122.203
+  vbmc: 192.168.10.203
   vbmc_bridge: "{{global_host_bridge}}"
   cpu: 2
   memory: 6144
@@ -120,7 +121,7 @@ ironic_metal:
     type: file
   uefi: false
 - name: ironic04-aio
-  vbmc: 192.168.122.204
+  vbmc: 192.168.10.204
   vbmc_bridge: "{{global_host_bridge}}"
   cpu: 2
   memory: 6144
@@ -137,7 +138,7 @@ ironic_metal:
     type: file
   uefi: false
 - name: ironic05-aio
-  vbmc: 192.168.122.205
+  vbmc: 192.168.10.205
   vbmc_bridge: "{{global_host_bridge}}"
   cpu: 2
   memory: 6144

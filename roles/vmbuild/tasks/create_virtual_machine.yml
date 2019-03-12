@@ -22,10 +22,6 @@
      qemu-img resize {{ build_disk_dir }}/{{ vm.build_name }}.qcow2 {{ vm.build_disk }}
   when: build_existing.stdout|int == 0
 
-- debug: var=item
-  with_items: 
-    - "{{ vm.block_device_list }}"
-
 - name: Precreate data disks
   command: >
     qemu-img create -f qcow2 {{ build_disk_dir }}/{{ vm.build_name }}-{{ item.device }}.qcow2 {{ item.block_size }}G

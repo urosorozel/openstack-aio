@@ -7,8 +7,6 @@
          "value": "ADMIN"},
         {"action": "set-attribute", "path": "driver_info/ipmi_password",
          "value": "ADMIN"},
-    {"action": "set-attribute", "path": "driver_info/ipmi_address",
-         "value": "{data[inventory][bmc_address]}"},
     {"action": "set-attribute", "path": "name",
          "value": "{data[inventory][system_vendor][manufacturer]}_{data[inventory][boot][pxe_interface]}"}
     ],
@@ -16,7 +14,18 @@
         {"op": "is-empty", "field": "node://driver_info.ipmi_password"},
         {"op": "is-empty", "field": "node://driver_info.ipmi_username"}
     ]
-},{
+},
+{
+    "description": "Set IPMI ipmi_address if not QEMU",
+    "actions": [
+    {"action": "set-attribute", "path": "driver_info/ipmi_address",
+         "value": "{data[inventory][bmc_address]}"}
+    ],
+    "conditions": [
+        {"op": "ne", "field": "data://inventory.system_vendor.manufacturer", "value": "QEMU"}
+    ]
+},
+{
     "description": "Set deploy info if not already set on node",
     "actions": [
         {"action": "set-attribute", "path": "driver_info/deploy_kernel",

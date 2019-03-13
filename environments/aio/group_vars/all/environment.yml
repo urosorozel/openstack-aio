@@ -1,0 +1,2 @@
+default_host_nameserver: 1.1.1.1
+host_nameservers: "{{ lookup('env', 'NAME_SERVER') | default(default_host_nameserver, True) }}"

@@ -1,8 +1,0 @@
----
-distro_packages:
-  - libvirt-bin
-  - qemu-kvm
-  - virtinst
-  - python-pip
-  - sshpass
-  - ovmf

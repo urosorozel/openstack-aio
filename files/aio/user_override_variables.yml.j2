@@ -1,0 +1,46 @@
+# Overrides to get ironic working in aio
+# Add DNS servers for inspector
+ironic_inspector_dhcp_nameservers: "172.30.0.100,{{ ansible_default_ipv4.address }}"
+{% if ipa_image_server_ip %}
+# Custom IPA image locaion
+ironic_inspector_ipa_kernel_url: "http://{{ipa_image_server_ip}}/ubuntu_kernel"
+ironic_inspector_ipa_kernel_sha256_url: "http://{{ipa_image_server_ip}}/ubuntu_kernel.sha256"
+ironic_inspector_ipa_initrd_url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk"
+ironic_inspector_ipa_initrd_sha256_url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk.sha256"
+{% endif %}
+
+{% raw %}
+ironic_tftp_server_address: "{{ container_networks.ironic_address.address }}"
+ironic_swift_endpoint: "http://{{ external_lb_vip_address }}:8080"
+ironic_neutron_cleaning_network_uuid: "ironic-network"
+ironic_neutron_provisioning_network_name: "ironic-network"
+ironic_inspector_pxe_append_params: "systemd.journald.forward_to_console=yes console=tty0 console=ttyS0,115200n8 ipa-insecure=1 ipa-debug=1 ramdisk_size=3485760 ipa-inspection-collectors=default,extra-hardware,logs ipa-collect-lldp=1"
+ironic_pxe_append_params: "systemd.journald.forward_to_console=yes console=tty0 console=ttyS0,115200n8 coreos.autologin ipa-insecure=1 ipa-debug=1"
+
+# Enable ironic inspector
+ironic_inspector_ironic_enable: True
+# Enable ironic ipxe
+ironic_httpboot_enabled: True
+# Use swift as webserver
+ironic_httpboot_use_swift: True
+# Overcome issue with selfsigned certs and ipxe
+swift_service_publicuri_proto: "http"
+# Hack to modify only swift service
+haproxy_extra_services:
+  - service:
+      haproxy_service_name: swift_proxy
+      haproxy_backend_nodes: "{{ groups['swift_proxy'] | default([]) }}"
+      haproxy_ssl: False
+      haproxy_balance_alg: source
+      haproxy_port: 8080
+      haproxy_balance_type: http
+      haproxy_backend_options:
+        - "httpchk GET /healthcheck HTTP/1.0\\r\\nUser-agent:\\ osa-haproxy-healthcheck"
+      haproxy_service_enabled: "{{ groups['swift_proxy'] is defined and groups['swift_proxy'] | length > 0 }}"
+
+# Don't remove dnsmasq package from host
+lxc_hosts_remove_distro_packages:
+
+# Update scheduler filter (aggregates have to exist)
+nova_scheduler_default_filters: "AggregateInstanceExtraSpecsFilter, RetryFilter, AvailabilityZoneFilter, RamFilter, AggregateRamFilter, ComputeFilter, AggregateCoreFilter, DiskFilter, AggregateDiskFilter, AggregateNumInstancesFilter, AggregateIoOpsFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, NUMATopologyFilter"
+{% endraw %}

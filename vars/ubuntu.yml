@@ -1,6 +1,0 @@
-iptable_rules:
-  - name: "Allow traffic forward between virbr0_ironic and virbr0"
-    in_interface: virbr0_ironic
-    out_interface: virbr0
-    source: 172.30.0.0/22
-    destination: 192.168.122.0/24

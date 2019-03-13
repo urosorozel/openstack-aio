@@ -21,7 +21,7 @@ fi
 }
 
 virsh list --name --all| egrep 'openstack-aio' | xargs -Ixx bash -c "virsh destroy xx;virsh undefine xx --nvram"
-virsh vol-list data |egrep 'openstack-aio' | egrep 'img|qcow' | awk '{print $1}' | xargs -Ixx  virsh vol-delete xx data
+virsh vol-list ${DISK_POOL_NAME:-data} |egrep 'openstack-aio' | egrep 'img|qcow' | awk '{print $1}' | xargs -Ixx  virsh vol-delete xx ${DISK_POOL_NAME:-data}
 ansible-playbook -vv build_aio.yml
 echo "Sleeping 50 sec to allow boot"
 sleep 50

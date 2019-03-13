@@ -118,6 +118,17 @@
       name: dnsmasq
       state: restarted
 
+  - name: Add ens3 to br-ironic
+    blockinfile:
+      create: yes
+      path: /etc/systemd/network/ironic-uplink.network
+      block: |
+        [Match]
+        Name=ens3
+
+        [Network]
+        Bridge=br-ironic
+
   - name: Setup openstack
     command: |
       openstack-ansible playbooks/setup-everything.yml

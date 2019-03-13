@@ -14,7 +14,7 @@
 {%- endfor %}
     ],
     "networks": [
-{%- for dev in vm.build_network_device_list %}
+{%- for dev in vm.build_network_device_list if dev.bootproto != "manual" %}
     {
         "id": "{{ dev.type | default('phy') }}-{{ dev.device }}",
         "type": "ipv4",

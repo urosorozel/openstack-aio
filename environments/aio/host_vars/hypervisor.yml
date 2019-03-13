@@ -1,6 +1,5 @@
 # start default variables
 default_host_bridge: host-aio
-default_host_nameserver: 10.184.227.134
 default_ironic_bridge: ironic-aio
 default_disk_pool_name: data
 default_disk_pool_path: /data
@@ -9,12 +8,12 @@ default_aio_cpu: 4
 default_build_memory: 16384
 default_aio_image_filename: openstack-aio.qcow2
 # end default variables
+
 aio_build_name: "{{default_aio_name}}"
 aio_image_filename: "{{ lookup('env', 'AIO_IMAGE_NAME') | default(default_aio_image_filename, True) }}"
 aio_cpu_num: "{{default_aio_cpu}}"
 aio_memory_mb: "{{default_build_memory}}"
 build_disk_dir: "{{global_disk_pool_path}}"
-host_nameservers: "{{ lookup('env', 'NAME_SERVER') | default(default_host_nameserver, True) }}"
 ubuntu_release: bionic
 global_disk_pool_name: "{{ lookup('env', 'DISK_POOL_NAME') | default(default_disk_pool_name, True) }}"
 global_disk_pool_path: "{{ lookup('env', 'DISK_POOL_PATH') | default(default_disk_pool_path, True) }}"

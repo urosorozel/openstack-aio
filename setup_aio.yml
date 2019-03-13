@@ -55,7 +55,7 @@
         expand-hosts
         domain=local.net
         no-resolv
-        server=1.1.1.1
+        server={{host_nameservers}}
         #log-queries
 
   - name: Add dnsmasq hosts
@@ -77,7 +77,7 @@
       path: /etc/resolv.conf
       create: yes
       block: |
-        nameserver 1.1.1.1
+        nameserver {{host_nameservers}}
         nameserver {{ ansible_default_ipv4.address }}
 
 
@@ -102,10 +102,15 @@
       chdir: /opt/openstack-ansible
       creates: /etc/openstack_deploy
 
+  - name: Deploy override variables
+    template:
+      src: files/aio/user_override_variables.yml.j2
+      dest: /etc/openstack_deploy/user_override_variables.yml
+
   - name: Remove temporary DNS name server
     lineinfile:
       path: /etc/resolv.conf
-      regexp: "^nameserver 1.1.1.1$"
+      regexp: "^nameserver {{host_nameservers}}$"
       state: absent
 
   - name: Restart Dnsmasq after br-ironic is available

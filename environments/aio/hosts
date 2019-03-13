@@ -2,4 +2,4 @@
 hypervisor  ansible_connection=local
 
 [aio]
-openstack-aio ansible_ssh_pass=openstack ansible_host=192.168.10.100
+openstack-aio ansible_host=192.168.10.100

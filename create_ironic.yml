@@ -11,6 +11,9 @@
           - python-dev
         state: latest
 
+    - name: Gather variables for each operating system
+      include: prepare_hypervisor.yml
+
     - name: Check if VM exists
       shell: |
         virsh list --name --all| grep -q ^{{ item.name }}$

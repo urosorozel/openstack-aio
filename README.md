@@ -25,7 +25,7 @@ swift  --os-username "service:glance" --os-password "6a936307655bf51bcd3d" \
 ### Build virtual nodes
 ```
 echo {1..5}| tr ' ' '\n' |xargs -Ixx -t openstack baremetal node set --driver-info \
-                   ipmi_address=192.168.122.20xx QEMU_01-0c-c4-7a-bb-ff-fxx
+                   ipmi_address=192.168.10.20xx QEMU_01-0c-c4-7a-bb-ff-fxx
 
 echo {1..5}| tr ' ' '\n' |xargs -Ixx -t bash -c "openstack baremetal node manage \
                     QEMU_01-0c-c4-7a-bb-ff-fxx;openstack baremetal node provide QEMU_01-0c-c4-7a-bb-ff-fxx"

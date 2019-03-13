@@ -22,9 +22,9 @@ global_ironic_bridge: "{{ lookup('env', 'IRONIC_BRIDGE') | default(default_ironi
 ubuntu_image_name: "bionic-server-cloudimg-amd64.img"
 
 iptable_rules:
-  - name: "Allow traffic forward between virbr0_ironic and virbr0"
+  - name: "Allow traffic forward between {{global_ironic_bridge}} and {{global_host_bridge}}"
     in_interface: "{{global_ironic_bridge}}"
-    out_interface: virbr0
+    out_interface: "{{global_host_bridge}}"
     source: 172.30.0.0/22
     destination: 192.168.10.0/24
 

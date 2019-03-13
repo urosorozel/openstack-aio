@@ -1,0 +1,5 @@
+export NAME_SERVER=1.1.1.1
+export DISK_POOL_NAME=vgdata1
+export DISK_POOL_PATH=/data/vgdata1
+export HOST_BRIDGE=virbr0
+export IRONIC_BRIDGE=virbr0_ironic

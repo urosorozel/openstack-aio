@@ -11,6 +11,8 @@ default_aio_image_filename: openstack-aio.qcow2
 # end default variables
 aio_build_name: "{{default_aio_name}}"
 aio_image_filename: "{{ lookup('env', 'AIO_IMAGE_NAME') | default(default_aio_image_filename, True) }}"
+aio_cpu_num: "{{default_aio_cpu}}"
+aio_memory_mb: "{{default_build_memory}}"
 build_disk_dir: "{{global_disk_pool_path}}"
 host_nameservers: "{{ lookup('env', 'NAME_SERVER') | default(default_host_nameserver, True) }}"
 ubuntu_release: bionic
@@ -36,9 +38,9 @@ blueprints:
     build_image: "http://cloud-images.ubuntu.com/{{ubuntu_release}}/current/{{ubuntu_image_name}}"
     build_virtualization: kvm
     build_os_family: Debian
-    build_fqdn: openstack-aio
+    build_fqdn: "{{aio_build_name}}"
     build_config_user_data_path: '{{ role_path}}/files/user_data_bionic'
-    build_ssh_public_key_path: ~/.ssh/id_rsa.pub
+    build_ssh_public_key_path: ~/.ssh/openstack-aio.pub
     build_network_info: true
     build_vnc_enable: false
     build_resolv:

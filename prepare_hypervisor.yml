@@ -9,6 +9,12 @@
   tags:
     - always
 
+
+- name: Generate SSH keys
+  shell: ssh-keygen -b 2048 -t rsa -f ~/.ssh/openstack-aio -q -N ""
+  args:
+    creates: ~/.ssh/openstack-aio
+
 - name: Install package
   apt:
     name: "{{distro_packages}}"
@@ -22,9 +28,14 @@
   virt_pool:
     command: define
     name: "{{global_disk_pool_name}}"
+    xml: '{{ lookup("template", "files/hypervisor/pool.xml.j2") }}'
+
+- name: Start data pool
+  virt_pool:
+    command: start
+    name: "{{global_disk_pool_name}}"
     state: active
     autostart: yes
-    xml: '{{ lookup("template", "files/hypervisor/pool.xml.j2") }}'
 
 - name: Create host network
   virt_net:

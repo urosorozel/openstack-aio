@@ -8,9 +8,9 @@
 
     - name: Create AIO vm
       command: >
-        virt-install --vcpus 8 --memory 16384
+        virt-install --vcpus {{aio_cpu_num}} --memory {{aio_memory_mb}}
                      --disk {{global_disk_pool_path}}/{{aio_image_filename}}
                      --network bridge={{global_host_bridge}},model=virtio,mac=0c:c4:7a:aa:ff:f1
                      --network bridge={{global_ironic_bridge}},model=virtio,,mac=0c:c4:7a:aa:ff:f2
-                     --name {{aio_build_name}}  --import --os-type linux --boot hd
+                     --name {{aio_build_name}} --os-variant auto --import --os-type linux --boot hd
                      --noautoconsole

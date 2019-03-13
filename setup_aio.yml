@@ -1,5 +1,5 @@
 - name: Configure Common
-  hosts: infra
+  hosts: aio
   remote_user: root
   gather_facts: false
   environment:

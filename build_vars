@@ -1,3 +1,4 @@
+# Edit and source this file if you want to create overrides
 export NAME_SERVER=1.1.1.1
 export DISK_POOL_NAME=vgdata1
 export DISK_POOL_PATH=/data/vgdata1

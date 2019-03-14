@@ -33,13 +33,6 @@
       line: 'APT::Periodic::Enable "0";'
       state: present
 
-#  - name: Install proxy settings
-#    template:
-#      dest: "/etc/environment"
-#      src: "files/aio/environment.j2"
-#      mode: "0644"
-#    when: proxy_server is defined and not False
-
   - name: Install dnsmasq
     apt:
       name: dnsmasq
@@ -112,6 +105,12 @@
     args:
       chdir: /opt/openstack-ansible
       creates: /etc/openstack_deploy
+
+  - name: Deploy proxy overrides (AIO doeesn't read no_proxy)
+    copy:
+      src: files/aio/user_variables_proxy.yml
+      dest: /etc/openstack_deploy/user_variables_proxy.yml
+    when: proxy_server is defined and not False
 
   - name: Deploy override variables
     template:

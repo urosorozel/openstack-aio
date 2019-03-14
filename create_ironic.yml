@@ -97,35 +97,31 @@
       with_items: "{{ ironic_metal }}"
     
 
-    - name: Create service dir
-      file:
-        path: /usr/lib/systemd/system
-        state: directory
-
     - name: Create the VirtualBMC systemd service
       copy:
         mode: 0664
-        dest: "/usr/lib/systemd/system/virtualbmc@.service"
+        dest: "/etc/systemd/system/vbmcd.service"
         content: |
           [Unit]
-          Description=VirtualBMC %i service
+          Description=Virtualbmc vbmcd
           After=network.target
+
           [Service]
           Type=forking
-          PIDFile=/root/.vbmc/%i/pid
-          ExecStart=/usr/local/bin/vbmc start %i
-          ExecStop=/usr/local/bin/vbmc stop %i
-          Restart=always
+          PIDFile=/root/.vbmc/master.pid
+          ExecStart=/usr/local/bin/vbmcd
+
           [Install]
           WantedBy=multi-user.target
-   
- 
-    - name: Start the Virtual BMCs
+
+    - name: Start vbmcd service
       systemd:
-        name: "virtualbmc@{{ item.name }}"
+        name: "vbmcd"
         state: started
         daemon_reload: yes
         enabled: true
+
+    - name: Start the Virtual BMCs
+      command: |
+        vbmc start {{ item.name }}
       with_items: "{{ ironic_metal }}"
-    
-    

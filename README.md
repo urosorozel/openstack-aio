@@ -10,7 +10,7 @@
 virsh list --all --name|grep aio|grep ironic \
                 | xargs -Ixx bash -c "virsh destroy xx;virsh undefine xx --nvram"
 virsh vol-list --pool vgdata1|grep aio|grep ironic \
-                | awk '{print $1}' | xargs -Ixx virsh vol-delete --pool vgdata1 --vol xx
+                | awk '{print $1}' | xargs -Ixx virsh vol-delete --pool ${DISK_POOL_NAME:-data} --vol xx
 ```
 
 

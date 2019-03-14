@@ -204,9 +204,16 @@
   tags:
     - create_aio_image
   tasks:
+    - name: Check power state
+      shell: |
+        virsh list --all | grep openstack-aio | grep "shut off"
+      register: power_state
+      changed_when: "power_state.rc == 1"
+
     - name: Power off openstack-aio
       command: |
         virsh shutdown openstack-aio
+      when: power_state.changed
       tags:
         - check-power
 

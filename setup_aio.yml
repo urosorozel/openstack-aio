@@ -162,6 +162,11 @@
         [Network]
         Bridge=br-ironic
 
+- name: Configure Common
+  hosts: aio
+  remote_user: root
+  gather_facts: false
+  tasks:
   - name: Setup openstack
     command: |
       openstack-ansible playbooks/setup-everything.yml

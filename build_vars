@@ -1,7 +1,11 @@
 # Edit and source this file if you want to create overrides
+#export PROXY_SERVER=http://x.x.x.x:3128
+#export NO_PROXY_SERVERS=".domain1.com,.domain2.com"
 export NAME_SERVER=1.1.1.1
-export DISK_POOL_NAME=vgdata1
-export DISK_POOL_PATH=/data/vgdata1
-export HOST_BRIDGE=virbr0
-export IRONIC_BRIDGE=virbr0_ironic
-export IPA_IMAGE_SERVER=10.184.227.134
+export DISK_POOL_NAME=data
+export DISK_POOL_PATH=/data
+export HOST_BRIDGE=host-aio
+export IRONIC_BRIDGE=ironic-aio
+# Define http server ip address where custom IPA images can be downloaded from
+# By default tinyipa image is downloaded
+#export IPA_IMAGE_SERVER=x.x.x.x

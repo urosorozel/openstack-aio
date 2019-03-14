@@ -1,2 +1,8 @@
 default_host_nameserver: 1.1.1.1
 host_nameservers: "{{ lookup('env', 'NAME_SERVER') | default(default_host_nameserver, True) }}"
+
+default_proxy_server:
+proxy_server:  "{{ lookup('env', 'PROXY_SERVER') | default(default_proxy_server, True) }}"
+
+default_no_proxy_servers: "127.0.0.1,localhost,172.29.236.100,192.168.10.100,.local.net"
+no_proxy: "127.0.0.1,localhost,172.29.236.100,192.168.10.100,.local.net,{{ lookup('env', 'NO_PROXY_SERVERS') | default(default_no_proxy_servers, True) }}"

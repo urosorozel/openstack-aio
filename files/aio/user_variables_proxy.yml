@@ -8,3 +8,4 @@ global_environment_variables:
    https_proxy: "{{ https_proxy_env }}"
    NO_PROXY: "{{ no_proxy_env }}"
    no_proxy: "{{ no_proxy_env }}"
+   PIP_OPTS: "--cert /etc/ssl/certs/ca-certificates.crt "

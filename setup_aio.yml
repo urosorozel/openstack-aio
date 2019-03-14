@@ -13,6 +13,7 @@
     https_proxy: "{{ proxy_server }}"
     NO_PROXY: "{{ no_proxy }}"
     no_proxy: "{{ no_proxy }}"
+    PIP_OPTS: "--cert /etc/ssl/certs/ca-certificates.crt "
   pre_tasks:
   - name: Install python2 for Ansible
     raw: bash -c "test -e /usr/bin/python || (export http_proxy={{proxy_server}}; apt -qqy update && apt install -qqy python-minimal python2.7)"

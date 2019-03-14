@@ -1,3 +1,18 @@
+lxc_container_backing_store: overlayfs
+
+pip_get_pip_options: "--cert /etc/ssl/certs/ca-certificates.crt"
+pip_install_options: "--cert /etc/ssl/certs/ca-certificates.crt"
+
+lxc_container_cache_files:
+  - src: "/etc/ssl/certs/ca-certificates.crt"
+    dest: "/etc/ssl/certs/ca-certificates.crt"
+  - src: "/usr/local/share/ca-certificates/midm.crt"
+    dest: "/usr/local/share/ca-certificates/midm.crt"
+
+lxc_container_cache_files_from_host:
+  - "/etc/ssl/certs/ca-certificates.crt"
+  - "/usr/local/share/ca-certificates/midm.crt"
+
 # Overrides to get ironic working in aio
 # Add DNS servers for inspector
 ironic_inspector_dhcp_nameservers: "172.30.0.100,{{ ansible_default_ipv4.address }}"

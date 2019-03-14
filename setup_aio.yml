@@ -134,6 +134,12 @@
       src: files/aio/user_override_variables.yml.j2
       dest: /etc/openstack_deploy/user_override_variables.yml
 
+  - name: Remove a line from user_variables
+    lineinfile:
+      path: /etc/openstack_deploy/user_variables.yml
+      regexp: "^lxc_container_backing_store.*"
+      state: absent
+
   - name: Remove temporary DNS name server
     lineinfile:
       path: /etc/resolv.conf

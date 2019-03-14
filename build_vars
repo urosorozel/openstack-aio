@@ -9,3 +9,5 @@ export IRONIC_BRIDGE=ironic-aio
 # Define http server ip address where custom IPA images can be downloaded from
 # By default tinyipa image is downloaded
 #export IPA_IMAGE_SERVER=x.x.x.x
+# Install extra cacert
+#export CA_CERT="$(cat cacert.crt)"

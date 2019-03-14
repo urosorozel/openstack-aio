@@ -24,6 +24,22 @@
     setup:
 
   tasks:
+  - name: Read mitm cacert (support for ssl proxy caching)
+    set_fact:
+      ca_cert: "{{ lookup('env', 'CA_CERT') | default() }}"
+
+  - name: Write CA certificate
+    copy:
+      content: "{{ca_cert}}"
+      dest: /usr/local/share/ca-certificates/midm.crt
+    when: ca_cert | length > 0
+    register: ca_write
+
+  - name: Update ca-certificates
+    command: |
+      update-ca-certificates
+    when: ca_write.changed
+
   - name: Create a new file for APT config
     file: path=/etc/apt/apt.conf.d/10disable-auto-apt  state=touch
 

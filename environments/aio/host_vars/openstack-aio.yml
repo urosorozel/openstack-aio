@@ -1,0 +1,11 @@
+default_ipa_image_server_ip: False
+ipa_image_server_ip: "{{ lookup('env', 'IPA_IMAGE_SERVER') | default(default_ipa_image_server_ip, True) }}"
+
+global_environment_variables:
+  proxy_server: '{{ proxy_server }}'
+  https_proxy: '{{ proxy_server }}'
+  no_proxy: '{{no_proxy}}' 
+  HTTP_PROXY: '{{ proxy_server }}'
+  HTTPS_PROXY: '{{ proxy_server }}'
+  NO_PROXY: '{{no_proxy}}'
+  PIP_CERT: /etc/ssl/certs/ca-certificates.crt

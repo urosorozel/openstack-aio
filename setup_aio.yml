@@ -206,10 +206,6 @@
       find /openstack /usr /var/lib/lxc /etc  -name cacert.pem | grep 'packages/certifi/cacert.pem' | xargs -Ixx -t bash -c "openssl x509 -in /etc/ssl/private/haproxy.pem -text | openssl x509 >> xx"
     when: cert_check.changed
 
-#  - meta: end_play
-  - name: Add ens3 to br-ironic
-    shell: |
-      brctl addif br-ironic ens3
 
   - include: post_deploy.yml
 
@@ -240,12 +236,13 @@
 - name: Post deploy VM
   hosts: hypervisor
   tags:
-    - create_aio_image
+    - create-image
   tasks:
     - name: Check power state
       shell: |
         virsh list --all | grep openstack-aio | grep "shut off"
       register: power_state
+      failed_when: false
       changed_when: "power_state.rc == 1"
 
     - name: Power off openstack-aio

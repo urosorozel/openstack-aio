@@ -122,6 +122,6 @@
         enabled: true
 
     - name: Start the Virtual BMCs
-      command: |
-        vbmc start {{ item.name }}
+      shell: |
+        vbmc list -f value|grep -w ^{{item.name}} | awk '{ print $2}'| grep "running" || vbmc start {{ item.name }}
       with_items: "{{ ironic_metal }}"

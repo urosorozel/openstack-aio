@@ -2,7 +2,7 @@ default_ipa_image_server_ip: False
 ipa_image_server_ip: "{{ lookup('env', 'IPA_IMAGE_SERVER') | default(default_ipa_image_server_ip, True) }}"
 
 global_environment_variables:
-  proxy_server: '{{ proxy_server }}'
+  http_proxy: '{{ proxy_server }}'
   https_proxy: '{{ proxy_server }}'
   no_proxy: '{{ no_proxy_servers }}'
   HTTP_PROXY: '{{ proxy_server }}'

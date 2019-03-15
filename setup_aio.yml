@@ -7,11 +7,11 @@
     #BOOTSTRAP_OPTS: "bootstrap_host_data_disk_device=vdb _bootstrap_host_data_disk_device=vdb container_tech=lxc"
     BOOTSTRAP_OPTS: "container_tech=lxc"
     SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
-    HTTP_PROXY: "{{ proxy_server }}"
-    HTTPS_PROXY: "{{ proxy_server }}"
+    #HTTP_PROXY: "{{ proxy_server }}"
+    #HTTPS_PROXY: "{{ proxy_server }}"
     http_proxy: "{{ proxy_server }}"
     https_proxy: "{{ proxy_server }}"
-    NO_PROXY: "{{ no_proxy }}"
+    #NO_PROXY: "{{ no_proxy }}"
     no_proxy: "{{ no_proxy }}"
     PIP_OPTS: "--cert /etc/ssl/certs/ca-certificates.crt "
   pre_tasks:
@@ -124,8 +124,8 @@
       creates: /etc/openstack_deploy
 
   - name: Deploy proxy overrides (AIO doeesn't read no_proxy)
-    copy:
-      src: files/aio/user_variables_proxy.yml
+    template:
+      src: files/aio/user_variables_proxy.yml.j2
       dest: /etc/openstack_deploy/user_variables_proxy.yml
     when: proxy_server is defined and not False
 
@@ -166,6 +166,9 @@
   hosts: aio
   remote_user: root
   gather_facts: false
+  environment:
+    http_proxy: "{{ proxy_server }}"
+    https_proxy: "{{ proxy_server }}"
   tasks:
   - name: Setup openstack
     command: |

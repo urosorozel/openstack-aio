@@ -1,6 +1,9 @@
-no_proxy_env: "localhost,127.0.0.1,{{ lookup('env', 'no_proxy') }},{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
 http_proxy_env: "{{ lookup('env', 'http_proxy') }}"
 https_proxy_env: "{{ lookup('env', 'https_proxy') }}"
+no_proxy: "{{ lookup('env', 'no_proxy') }}"
+{%  raw %}
+no_proxy_env: "localhost,127.0.0.1,{{ no_proxy }},{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+
 global_environment_variables:
    HTTP_PROXY: "{{ http_proxy_env }}"
    HTTPS_PROXY: "{{ https_proxy_env }}"
@@ -9,3 +12,4 @@ global_environment_variables:
    NO_PROXY: "{{ no_proxy_env }}"
    no_proxy: "{{ no_proxy_env }}"
    PIP_OPTS: '"--cert /etc/ssl/certs/ca-certificates.crt "'
+{% endraw %}

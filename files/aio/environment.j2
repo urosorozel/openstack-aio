@@ -1,0 +1,8 @@
+{% if global_environment_variables is defined %}
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+{%   for key, value in global_environment_variables.items() %}
+{%     if value %}
+{{ key }}={{ value }}
+{%     endif %}
+{%   endfor %}
+{% endif %}

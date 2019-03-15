@@ -2,18 +2,7 @@
   hosts: aio
   remote_user: root
   gather_facts: false
-  environment:
-    #ANSIBLE_DEBUG: 1
-    #BOOTSTRAP_OPTS: "bootstrap_host_data_disk_device=vdb _bootstrap_host_data_disk_device=vdb container_tech=lxc"
-    BOOTSTRAP_OPTS: "container_tech=lxc"
-    SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
-    #HTTP_PROXY: "{{ proxy_server }}"
-    #HTTPS_PROXY: "{{ proxy_server }}"
-    http_proxy: "{{ proxy_server }}"
-    https_proxy: "{{ proxy_server }}"
-    #NO_PROXY: "{{ no_proxy }}"
-    no_proxy: "{{ no_proxy_servers }}"
-    PIP_OPTS: "--cert /etc/ssl/certs/ca-certificates.crt "
+  environment: "{{ global_environment_variables }}"
   pre_tasks:
   - name: Install python2 for Ansible
     raw: bash -c "test -e /usr/bin/python || (export http_proxy={{proxy_server}}; apt -qqy update && apt install -qqy python-minimal python2.7)"
@@ -29,10 +18,15 @@
     set_fact:
       ca_cert: "{{ lookup('env', 'CA_CERT') | default() }}"
 
+  - name: Add environment
+    template:
+      src: files/aio/environment.j2
+      dest: /etc/environment
+
   - name: Write CA certificate
     copy:
       content: "{{ca_cert}}"
-      dest: /usr/local/share/ca-certificates/midm.crt
+      dest: /usr/local/share/ca-certificates/mitm.crt
     when: ca_cert | length > 0
     register: ca_write
 
@@ -93,7 +87,6 @@
       path: /etc/resolv.conf
       state: absent
 
-
   - name: Add nameservers to resolv.conf
     blockinfile:
       path: /etc/resolv.conf
@@ -102,13 +95,11 @@
         nameserver {{host_nameservers}}
         nameserver {{ ansible_default_ipv4.address }}
 
-
   - name: Get Openstack ansible from git
     git:
       repo: https://github.com/urosorozel/openstack-ansible.git
       dest: /opt/openstack-ansible
       version: osa_rocky_14feb
-
 
   - name: Boostrap ansible
     shell: |
@@ -116,6 +107,7 @@
     args:
       chdir: /opt/openstack-ansible
       creates: /etc/ansible/roles
+    environment: "{{ openstack_aio_variabes }}"
 
   - name: Boostrap aio
     shell: |
@@ -123,6 +115,7 @@
     args:
       chdir: /opt/openstack-ansible
       creates: /etc/openstack_deploy
+    environment: "{{ openstack_aio_variabes }}"
 
   - name: Deploy proxy overrides (AIO doeesn't read no_proxy)
     template:
@@ -167,9 +160,6 @@
   hosts: aio
   remote_user: root
   gather_facts: false
-  environment:
-    http_proxy: "{{ proxy_server }}"
-    https_proxy: "{{ proxy_server }}"
   tasks:
   - name: Setup openstack
     command: |

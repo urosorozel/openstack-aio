@@ -6,8 +6,8 @@ pip_install_options: "--cert /etc/ssl/certs/ca-certificates.crt"
 lxc_container_cache_files:
   - src: "/etc/ssl/certs/ca-certificates.crt"
     dest: "/etc/ssl/certs/ca-certificates.crt"
-#  - src: "/usr/local/share/ca-certificates/midm.crt"
-#    dest: "/usr/local/share/ca-certificates/midm.crt"
+  - src: "/usr/local/share/ca-certificates/mitm.crt"
+    dest: "/usr/local/share/ca-certificates/mitm.crt"
 #
 #lxc_container_cache_files_from_host:
 #  - "/etc/ssl/certs/ca-certificates.crt"

@@ -4,8 +4,14 @@ ipa_image_server_ip: "{{ lookup('env', 'IPA_IMAGE_SERVER') | default(default_ipa
 global_environment_variables:
   proxy_server: '{{ proxy_server }}'
   https_proxy: '{{ proxy_server }}'
-  no_proxy: '{{no_proxy}}' 
+  no_proxy: '{{ no_proxy_servers }}'
   HTTP_PROXY: '{{ proxy_server }}'
   HTTPS_PROXY: '{{ proxy_server }}'
-  NO_PROXY: '{{no_proxy}}'
-  PIP_CERT: /etc/ssl/certs/ca-certificates.crt
+  NO_PROXY: '{{no_proxy_servers}}'
+
+openstack_aio_variabes:
+  #ANSIBLE_DEBUG: 1
+  #BOOTSTRAP_OPTS: "bootstrap_host_data_disk_device=vdb _bootstrap_host_data_disk_device=vdb container_tech=lxc"
+  BOOTSTRAP_OPTS: "container_tech=lxc"
+  SCENARIO: "aio_lxc_swift_ironic_ironic-inspector"
+  PIP_OPTS: "--cert /etc/ssl/certs/ca-certificates.crt "

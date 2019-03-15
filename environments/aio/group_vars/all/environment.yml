@@ -5,4 +5,4 @@ default_proxy_server:
 proxy_server:  "{{ lookup('env', 'PROXY_SERVER') | default(default_proxy_server, True) }}"
 
 default_no_proxy_servers: ".local.net"
-no_proxy: "{{ lookup('env', 'NO_PROXY_SERVERS') | default(default_no_proxy_servers, True) }}"
+no_proxy_servers: "{{ lookup('env', 'NO_PROXY_SERVERS') | default(default_no_proxy_servers, True) }}"

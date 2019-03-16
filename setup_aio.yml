@@ -204,8 +204,10 @@
       find /openstack /usr /var/lib/lxc /etc  -name cacert.pem | grep 'packages/certifi/cacert.pem' | xargs -Ixx -t bash -c "openssl x509 -in /etc/ssl/private/haproxy.pem -text | openssl x509 >> xx"
     when: cert_check.changed
 
-
-  - include: post_deploy.yml
+  - name: Run post deploy
+    include: post_deploy.yml
+    tags:
+      - post-deploy
 
   - name: Trurn off swap
     command: |

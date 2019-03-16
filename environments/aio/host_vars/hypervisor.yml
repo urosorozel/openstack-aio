@@ -140,7 +140,7 @@ ironic_metal:
   - device: sda
     block_size: 40
     type: file
-  uefi: false
+  uefi: true
 - name: ironic05-aio
   vbmc: 192.168.10.205
   vbmc_bridge: "{{global_host_bridge}}"
@@ -157,4 +157,4 @@ ironic_metal:
   - device: sda
     block_size: 40
     type: file
-  uefi: false
+  uefi: true

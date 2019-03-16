@@ -450,6 +450,15 @@
 #        enabled: yes
 #        masked: no
 #        started: yes
+- name: Update all containers
+  hosts: ironic_api_container
+  tasks:
+    - name: Copy ipxe_config.template to ironic api container
+      copy:
+        src: /opt/openstack-ansible/playbooks/post/ipxe_config.template
+        dest: /openstack/venvs/ironic-18.1.4/lib/python2.7/site-packages/ironic/drivers/modules/ipxe_config.template
+  tags:
+    - ipxe-config
 
 - name: Post deploy
   hosts: utility_container[0]

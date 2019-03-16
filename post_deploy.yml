@@ -20,6 +20,8 @@
         - ironic_uefi.yml
         - grub.cfg
         - rules.json.j2
+        # bug in ipxe_config template
+        - ipxe_config.template
 
     - name: Run post_deploy.yml on infra1
       shell: |

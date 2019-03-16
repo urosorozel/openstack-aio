@@ -8,6 +8,7 @@ global_environment_variables:
   HTTP_PROXY: '{{ proxy_server }}'
   HTTPS_PROXY: '{{ proxy_server }}'
   NO_PROXY: '{{no_proxy_servers}}'
+  PIP_CERT: /etc/ssl/certs/ca-certificates.crt
 
 openstack_aio_variabes:
   #ANSIBLE_DEBUG: 1

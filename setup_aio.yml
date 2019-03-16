@@ -22,6 +22,7 @@
     template:
       src: files/aio/environment.j2
       dest: /etc/environment
+    when: proxy_server is defined and not false
 
   - name: Write CA certificate
     copy:
@@ -160,6 +161,8 @@
   hosts: aio
   remote_user: root
   gather_facts: false
+  tags:
+    - setup-openstack
   tasks:
   - name: Setup openstack
     command: |
@@ -167,6 +170,7 @@
     args:
       chdir: /opt/openstack-ansible
       creates: /etc/openstack-release 
+    environment: "{{ global_environment_variables }}"
 
   - name: Check if drivare is changed
     shell: |

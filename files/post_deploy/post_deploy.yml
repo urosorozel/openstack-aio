@@ -74,7 +74,7 @@
     - name: Install virtualenv
       pip:
         name: virtualenv
-        extra_args: --isolated
+        extra_args: --isolated --cert /etc/ssl/certs/ca-certificates.crt
 
     - name: pip install shade for ansible openstack module support
       pip:
@@ -84,7 +84,7 @@
       pip:
         requirements: /root/requirements.txt
         virtualenv: /root/enroll
-        extra_args: --isolated
+        extra_args: --isolated --cert /etc/ssl/certs/ca-certificates.crt
 
     - name: Get ironic hosts for baremetal server aggregate
       shell: |

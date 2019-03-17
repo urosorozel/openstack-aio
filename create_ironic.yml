@@ -26,7 +26,7 @@
     - name: Start Virtual machine
       command: > 
         virt-install --name="{{ item.item.name }}"
-                     --boot "hd,network,menu=on{% if item.item.uefi %},loader=/usr/share/OVMF/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/OVMF_VARS.fd{% endif %}"
+                     --boot "network,hd{% if item.item.uefi %},loader=/usr/share/OVMF/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/OVMF_VARS.fd{% endif %}"
                      --vcpus="{{ item.item.cpu }}"
                      --ram="{{ item.item.memory }}"
                      --description="libvirt VM"
@@ -46,6 +46,17 @@
 
       #when: virsh list --name --all| grep -q ^{{ item.name }}$
       tags: create_ironic
+
+    - name: Remove ipxe rom on network interface
+      shell: |
+        {% if item.item.uefi %}
+        virsh dumpxml {{ item.item.name }}|  sed "/<interface type='bridge'>/a <rom bar='off'\/>"|virsh define /dev/stdin
+        virsh destroy {{ item.item.name }}
+        virsh start {{ item.item.name }}
+        {% endif %}
+        echo "BIOS item"
+      with_items: "{{ check_vm.results }}"
+      when: item.rc == 1
 
     - name: Install VirtualBMC package
       pip:

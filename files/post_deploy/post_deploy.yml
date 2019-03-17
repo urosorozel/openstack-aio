@@ -30,10 +30,10 @@
       ubuntu:
         kernel:
           name: "ubuntu_kernel"
-          url: "http://10.184.227.134/ubuntu_kernel"
+          url: "http://{{ipa_image_server_ip}}/ubuntu_kernel"
         ramdisk:
           name: "ubuntu_ramdisk"
-          url: "http://10.184.227.134/ubuntu_ramdisk"
+          url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk"
   tasks:
 
     - name: Update openrc for ironic API
@@ -364,7 +364,7 @@
       os_image_facts:
         cloud: default
         validate_certs: False
-        image: ubuntu_ramdisk
+        image: "{{ ipa_ramdisk_name }}"
       register: ipa_ramdisk
 
 
@@ -372,7 +372,7 @@
       os_image_facts:
         cloud: default
         validate_certs: False
-        image: ubuntu_kernel
+        image: "{{ ipa_kernel_name }}"
       register: ipa_kernel
 
     - name: Output introspection rules

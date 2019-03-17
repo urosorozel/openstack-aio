@@ -14,11 +14,16 @@ lxc_container_cache_files:
 # Add DNS servers for inspector
 ironic_inspector_dhcp_nameservers: "172.30.0.100,{{ ansible_default_ipv4.address }}"
 {% if ipa_image_server_ip %}
+ipa_ramdisk_name: "ubuntu_ramdisk"
+ipa_kernel_name: "ubuntu_kernel"
 # Custom IPA image locaion
 ironic_inspector_ipa_kernel_url: "http://{{ipa_image_server_ip}}/ubuntu_kernel"
 ironic_inspector_ipa_kernel_sha256_url: "http://{{ipa_image_server_ip}}/ubuntu_kernel.sha256"
 ironic_inspector_ipa_initrd_url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk"
 ironic_inspector_ipa_initrd_sha256_url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk.sha256"
+{% else %}
+ipa_ramdisk_name: "tinyipa_ramdisk"
+ipa_kernel_name: "tinyipa_kernel"
 {% endif %}
 
 {% raw %}

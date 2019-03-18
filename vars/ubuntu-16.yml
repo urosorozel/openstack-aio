@@ -9,4 +9,4 @@ distro_packages:
   - sshpass
 # package is too old and doesnt work
 #  - ovmf
-ovmf_url: http://launchpadlibrarian.net/415325068/ovmf_0~20181115.85588389-3ubuntu1_all.deb
+ovmf_url: http://launchpadlibrarian.net/357855089/ovmf_0~20180205.c0d9813c-2_all.deb

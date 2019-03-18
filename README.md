@@ -1,9 +1,55 @@
-### Undefine UEFI virtual machines
-- Disable iPXE agent fo tianocore
-`<rom bar='off'/>`
+### Openstack Ironic AIO
+Collection of ansible playbooks which build Openstack Ironic AIO environment.
 
-- Undefine VM with nvram
-`virsh undefine vm --nvram`
+## How to use
+1. Git clone repositoy
+`# git clone https://github.com/urosorozel/openstack-aio.git`
+
+2. Edit build_vars
+```
+# Edit and source this file if you want to create overrides
+#export PROXY_SERVER=http://x.x.x.x:3128
+#export NO_PROXY_SERVERS=".domain1.com,.domain2.com"
+export NAME_SERVER=1.1.1.1
+export DISK_POOL_NAME=data
+export DISK_POOL_PATH=/data
+export HOST_BRIDGE=host-aio
+export IRONIC_BRIDGE=ironic-aio
+# Define http server ip address where custom IPA images can be downloaded from
+# By default tinyipa image is downloaded
+#export IPA_IMAGE_SERVER=x.x.x.x
+# Install extra cacert
+#export CA_CERT="$(cat cacert.crt)"
+# Deploy AIO image filename
+# export AIO_IMAGE_NAME=openstack-aio.qcow2
+```
+4. Source variables
+`# source build_vars`
+
+3. Run ansible_install.sh
+`# ./ansible_install.sh`
+
+4. Create AIO virtual machine by running either:
+`# ./rebuild.sh`
+
+or
+
+```
+# ansible-playbook build_aio.yml
+# ansible-playbook setup_aio.yml
+```
+
+### Environment variables
+
+`PROXY_SERVER` - set http_proxy server if you don't have direct access to internet
+`CA_CERT` - this variable should include CA certificate if mitm proxy is used
+`NAME_SERVER` - DNS server to be used
+`DISK_POOL_NAME` - libvirt disk pool name
+`DISK_POOL_PATH` - libvirt dir pool path
+`HOST_BRIDGE` - libvirt host network name
+`IRONIC_BRIDGE` - libvirt ironic network name
+`IPA_IMAGE_SERVER` - custom IPA image http server address
+`AIO_IMAGE_NAME` - if you are deploying AIO from existing image place image in DISK_POOL_PATH and provide filename
 
 ### Delete ironic VM
 ```
@@ -41,3 +87,10 @@ echo {1..5}| tr ' ' '\n' |xargs -Ixx -t openstack server create --key-name osa_k
 openstack server create --key-name osa_key --flavor virtual-flavor --security-group server_ssh_icmp \
                      --image cirros-0.3.6 --nic net-id=$NET_DUMMY_UUID virtual
 ```
+
+### Undefine UEFI virtual machines
+- Disable iPXE agent fo tianocore
+`<rom bar='off'/>`
+
+- Undefine VM with nvram
+`virsh undefine vm --nvram`

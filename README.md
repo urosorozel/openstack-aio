@@ -52,7 +52,7 @@ or
 
 `CA_CERT`  this variable should include CA certificate if mitm proxy is used
 
-`NAME_SERVER  DNS server to be used
+`NAME_SERVER` DNS server to be used
 
 `DISK_POOL_NAME`  libvirt disk pool name
 

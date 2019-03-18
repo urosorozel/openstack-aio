@@ -100,14 +100,6 @@
       with_items: "{{ vm_ip_result.results }}"
       when: item.stdout|int == 0
 
-    
-    - name: Create the Virtual BMCs
-      command: "vbmc add --username ADMIN --password ADMIN --address={{ item.vbmc }} {{ item.name }}"
-      args:
-        creates: /root/.vbmc/{{ item.name }}/config
-      with_items: "{{ ironic_metal }}"
-    
-
     - name: Create the VirtualBMC systemd service
       copy:
         mode: 0664
@@ -131,6 +123,12 @@
         state: started
         daemon_reload: yes
         enabled: true
+
+    - name: Create the Virtual BMCs
+      command: "vbmc add --username ADMIN --password ADMIN --address={{ item.vbmc }} {{ item.name }}"
+      args:
+        creates: /root/.vbmc/{{ item.name }}/config
+      with_items: "{{ ironic_metal }}"
 
     - name: Start the Virtual BMCs
       shell: |

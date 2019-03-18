@@ -4,7 +4,9 @@
     - deploy_aio_image
   tasks:
     - name: Gather variables for each operating system
-      include: prepare_hypervisor.yml
+      include: common/prepare_hypervisor.yml
+      tags:
+        - prepare-hypervisor
 
     - name: Create AIO vm
       command: >

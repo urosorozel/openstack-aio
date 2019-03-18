@@ -19,6 +19,11 @@
   apt:
     name: "{{distro_packages}}"
 
+- name: Install latest ovmf for xenial
+  apt:
+    deb: "{{ovmf_url}}"
+  when: ansible_distribution_release == "xenial"
+
 - name: Create data pool dir
   file:
     path: "{{global_disk_pool_path}}"

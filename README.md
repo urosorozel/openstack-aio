@@ -1,10 +1,11 @@
-### Openstack Ironic AIO
+# Openstack Ironic AIO
 Collection of ansible playbooks which build Openstack Ironic AIO environment.
 
 ## How to use
 1. Git clone repositoy
-`# git clone https://github.com/urosorozel/openstack-aio.git`
-
+```
+# git clone https://github.com/urosorozel/openstack-aio.git
+```
 2. Edit build_vars
 ```
 # Edit and source this file if you want to create overrides
@@ -24,13 +25,19 @@ export IRONIC_BRIDGE=ironic-aio
 # export AIO_IMAGE_NAME=openstack-aio.qcow2
 ```
 4. Source variables
-`# source build_vars`
 
+```
+# source build_vars
+```
 3. Run ansible_install.sh
-`# ./ansible_install.sh`
+```
+# ./ansible_install.sh
+```
 
 4. Create AIO virtual machine by running either:
-`# ./rebuild.sh`
+```
+# ./rebuild.sh
+```
 
 or
 
@@ -41,15 +48,15 @@ or
 
 ### Environment variables
 
-`PROXY_SERVER` - set http_proxy server if you don't have direct access to internet
-`CA_CERT` - this variable should include CA certificate if mitm proxy is used
-`NAME_SERVER` - DNS server to be used
-`DISK_POOL_NAME` - libvirt disk pool name
-`DISK_POOL_PATH` - libvirt dir pool path
-`HOST_BRIDGE` - libvirt host network name
-`IRONIC_BRIDGE` - libvirt ironic network name
-`IPA_IMAGE_SERVER` - custom IPA image http server address
-`AIO_IMAGE_NAME` - if you are deploying AIO from existing image place image in DISK_POOL_PATH and provide filename
+`PROXY_SERVER`  set http_proxy server if you don't have direct access to internet
+`CA_CERT`  this variable should include CA certificate if mitm proxy is used
+`NAME_SERVER  DNS server to be used
+`DISK_POOL_NAME`  libvirt disk pool name
+`DISK_POOL_PATH`  libvirt dir pool path
+`HOST_BRIDGE`  libvirt host network name
+`IRONIC_BRIDGE`  libvirt ironic network name
+`IPA_IMAGE_SERVER`  custom IPA image http server address
+`AIO_IMAGE_NAME`  if you are deploying AIO from existing image place image in DISK_POOL_PATH and provide filename
 
 ### Delete ironic VM
 ```

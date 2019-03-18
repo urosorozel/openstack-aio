@@ -11,3 +11,5 @@ export IRONIC_BRIDGE=ironic-aio
 #export IPA_IMAGE_SERVER=x.x.x.x
 # Install extra cacert
 #export CA_CERT="$(cat cacert.crt)"
+# Deploy AIO image filename
+#AIO_IMAGE_NAME=openstack-aio.qcow2

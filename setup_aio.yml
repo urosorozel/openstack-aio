@@ -1,3 +1,11 @@
+- name: Prepare hypervisor
+  hosts: hypervisor
+  tags:
+    - prepare-hypervisor
+  tasks:
+    - name: Install packages and configure hypervisor
+      include: common/prepare_hypervisor.yml
+
 - name: Configure Common
   hosts: aio
   remote_user: root
@@ -205,7 +213,7 @@
     when: cert_check.changed
 
   - name: Run post deploy
-    include: post_deploy.yml
+    include: common/post_deploy.yml
     tags:
       - post-deploy
 

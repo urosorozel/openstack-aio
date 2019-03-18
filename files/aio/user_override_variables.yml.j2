@@ -61,3 +61,41 @@ lxc_hosts_remove_distro_packages:
 # Update scheduler filter (aggregates have to exist)
 nova_scheduler_default_filters: "AggregateInstanceExtraSpecsFilter, RetryFilter, AvailabilityZoneFilter, RamFilter, AggregateRamFilter, ComputeFilter, AggregateCoreFilter, DiskFilter, AggregateDiskFilter, AggregateNumInstancesFilter, AggregateIoOpsFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, NUMATopologyFilter"
 {% endraw %}
+
+
+# Custom post deploy
+cloud_images:
+  - bionic:
+     name: "ubuntu-bionic"
+     url: "http://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
+  - xenial:
+     name: "ubuntu-xenial"
+     url: "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-uefi1.img"
+  - cirros:
+     name: "cirros-0.3.6"
+     url: "http://download.cirros-cloud.net/0.3.6/cirros-0.3.6-x86_64-disk.img"
+
+ipa_images:
+#   coreos:
+#     kernel:
+#       url: "http://tarballs.openstack.org/ironic-python-agent/coreos/files/coreos_production_pxe-stable-rocky.vmlinuz"
+#       name: "coreos_kernel"
+#     ramdisk:
+#       url: "http://tarballs.openstack.org/ironic-python-agent/coreos/files/coreos_production_pxe_image-oem-stable-rocky.cpio.gz"
+#       name: "coreos_ramdisk"
+  tinyipa:
+    kernel:
+      url: "http://tarballs.openstack.org/ironic-python-agent/tinyipa/files/tinyipa-stable-rocky.vmlinuz"
+      name: "tinyipa_kernel"
+    ramdisk:
+      url: "http://tarballs.openstack.org/ironic-python-agent/tinyipa/files/tinyipa-stable-rocky.gz"
+      name: "tinyipa_ramdisk"
+{% if ipa_image_server_ip %}
+  ubuntu:
+    kernel:
+      name: "ubuntu_kernel"
+      url: "http://{{ipa_image_server_ip}}/ubuntu_kernel"
+    ramdisk:
+      name: "ubuntu_ramdisk"
+      url: "http://{{ipa_image_server_ip}}/ubuntu_ramdisk"
+{% endif %}

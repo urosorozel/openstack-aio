@@ -5,6 +5,7 @@ distro_packages:
   - libvirt-clients
   - libvirt-daemon-system
   - qemu-kvm
+  - qemu-utils
   - virtinst
   - python-pip
   - sshpass

@@ -1,6 +1,7 @@
 ---
 distro_packages:
   - python-lxml
+  - qemu-utils
   - libvirt-bin
   - qemu-kvm
   - virtinst

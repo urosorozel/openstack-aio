@@ -27,12 +27,13 @@ iptable_rules:
     out_interface: "{{global_host_bridge}}"
     source: 172.30.0.0/22
     destination: 192.168.10.0/24
+    rule_num: 1
   - name: "Allow traffic 169.254.0.0/16 between {{global_ironic_bridge}} and {{global_host_bridge}}"
     in_interface: "{{global_ironic_bridge}}"
     out_interface: "{{global_host_bridge}}"
     source: 169.254.0.0/16
     destination: 192.168.10.0/24
-
+    rule_num: 2
 blueprints:
   - build_name: "{{aio_build_name}}"
     build_cpu: "{{default_aio_cpu}}"

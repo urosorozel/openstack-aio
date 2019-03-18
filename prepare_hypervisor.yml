@@ -66,7 +66,7 @@
 - name: Add rules
   iptables:
     action: insert
-    rule_num: 3
+    rule_num: "{{item.rule_num}}"
     chain: FORWARD
     out_interface: "{{item.out_interface}}"
     in_interface: "{{item.in_interface}}"

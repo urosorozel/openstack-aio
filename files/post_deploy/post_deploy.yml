@@ -159,7 +159,7 @@
         allocation_pool_end: 172.30.3.254
         dns_nameservers:
            - 172.30.0.100
-           - 192.168.122.100
+           - 192.168.10.100
         validate_certs: False
 
 

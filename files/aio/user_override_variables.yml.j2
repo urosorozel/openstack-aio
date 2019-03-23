@@ -13,6 +13,7 @@ lxc_container_cache_files:
 # Overrides to get ironic working in aio
 # Add DNS servers for inspector
 ironic_inspector_dhcp_nameservers: "172.30.0.100,{{ ansible_default_ipv4.address }}"
+ironic_inspector_dhcp_pool_range: 172.30.0.2 172.30.0.50
 {% if ipa_image_server_ip %}
 ipa_ramdisk_name: "ubuntu_ramdisk"
 ipa_kernel_name: "ubuntu_kernel"
@@ -40,6 +41,8 @@ ironic_inspector_ironic_enable: True
 ironic_httpboot_enabled: True
 # Use swift as webserver
 ironic_httpboot_use_swift: True
+# enable extra processing hooks
+ironic_inspector_processing_hooks: "ramdisk_error,root_disk_selection,scheduler,validate_interfaces,capabilities,pci_devices,raid_device,extra_hardware,local_link_connection,lldp_basic"
 # Overcome issue with selfsigned certs and ipxe
 swift_service_publicuri_proto: "http"
 # Hack to modify only swift service

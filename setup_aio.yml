@@ -104,6 +104,13 @@
         nameserver {{host_nameservers}}
         nameserver {{ ansible_default_ipv4.address }}
 
+  - name: Enable auto restart of dnsmasq
+    ini_file:
+      path: /lib/systemd/system/dnsmasq.service
+      section: Service
+      option: Restart
+      value: always
+
   - name: Get Openstack ansible from git
     git:
       repo: https://github.com/urosorozel/openstack-ansible.git

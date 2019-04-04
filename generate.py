@@ -60,6 +60,7 @@ for node in range(args.node_count):
   # get ip address
   template = copy.deepcopy(template)
   template["name"] = "ironic%s" % node_index
+  template["fqdn"] = "ironic%s" % node_index
   template["cpu"] = args.cpu
   template["memory"] = args.memory
   template["block_device_list"][0]["block_size"] = args.disk
@@ -68,7 +69,7 @@ for node in range(args.node_count):
   template["vbmc"] = str(ip)
   # get mac address
   mac=EUI(template["network_device_list"][0]["host_net_mac"])
-  mac.value = mac.value + node_index
+  mac.value = mac.value + 1
   mac.dialect = mac_unix_expanded
   template["network_device_list"][0]["host_net_mac"] = str(mac)
   nodes.append(template)

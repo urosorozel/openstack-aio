@@ -13,7 +13,7 @@ lxc_container_cache_files:
 # Overrides to get ironic working in aio
 # Add DNS servers for inspector
 ironic_inspector_dhcp_nameservers: "172.30.0.100,{{ ansible_default_ipv4.address }}"
-ironic_inspector_dhcp_pool_range: 172.30.0.2 172.30.0.50
+ironic_inspector_dhcp_pool_range: 172.30.3.0 172.30.3.254
 {% if ipa_image_server_ip %}
 ipa_ramdisk_name: "ubuntu_ramdisk"
 ipa_kernel_name: "ubuntu_kernel"

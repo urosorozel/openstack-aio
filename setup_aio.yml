@@ -147,8 +147,11 @@
   - name: Remove a line from user_variables
     lineinfile:
       path: /etc/openstack_deploy/user_variables.yml
-      regexp: "^lxc_container_backing_store.*"
+      regexp: "{{ item }}"
       state: absent
+    with_items:
+      - "^lxc_container_backing_store.*"
+      - "^debug:.*"
 
   - name: Remove temporary DNS name server
     lineinfile:
